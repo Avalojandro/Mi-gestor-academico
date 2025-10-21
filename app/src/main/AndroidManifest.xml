@@ -12,15 +12,37 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MiGestorAcademico"
         tools:targetApi="31">
+
+        <!-- SPLASH INICIAL -->
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- LOGIN -->
+        <activity
+            android:name=".activities.LoginActivity"
+            android:exported="false" />
+
+        <!-- REGISTRO -->
+        <activity
+            android:name=".activities.RegisterActivity"
+            android:exported="false" />
+
+        <!-- SPLASH ACCESO -->
+        <activity
+            android:name=".activities.SplashActivityAccess"
+            android:exported="false" />
+
+        <!-- DASHBOARD PRINCIPAL -->
+        <activity
+            android:name=".activities.MainActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
