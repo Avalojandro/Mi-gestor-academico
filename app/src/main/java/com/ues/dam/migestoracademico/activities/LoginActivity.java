@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etUsuario, etContrasena;
     private Button btnAcceder, btnRegistrarse;
     private AppDB db;
+    private CheckBox cbGuardarSesion;
 
     private static final String PREF_SESION = "SesionApp";
     private static final String CLAVE_SESION_ACTIVA = "sesionActiva";
@@ -53,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
         etContrasena = findViewById(R.id.etContrasena);
         btnAcceder = findViewById(R.id.btnAcceder);
         btnRegistrarse = findViewById(R.id.btnRegistrarse);
+        cbGuardarSesion = findViewById(R.id.guardarSesion);
     }
 
     private void iniciarSesion() {
@@ -70,7 +73,14 @@ public class LoginActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> {
                     if (usuarioEncontrado != null) {
-                        guardarSesionActiva();
+                        //anadiendo logica para solo guardar la session cuando el checkbox esta activo
+                        if (cbGuardarSesion.isChecked()){
+                            guardarSesionActiva();
+                        }else {
+                            Toast.makeText(this, "No se va guardar la session", Toast.LENGTH_SHORT).show();
+
+                        }
+
                         Intent intent = new Intent(LoginActivity.this, SplashActivityAccess.class);
                         startActivity(intent);
                         finish();

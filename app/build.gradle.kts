@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.ues.dam.migestoracademico"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.ues.dam.migestoracademico"
