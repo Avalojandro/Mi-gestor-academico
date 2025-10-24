@@ -1,5 +1,6 @@
 package com.ues.dam.migestoracademico.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -68,7 +69,7 @@ public class EditProfileActivity extends AppCompatActivity {
             usuario.name = newName;
 
             // 3. Save to local Room DB
-            db.usuarioDAO().update(usuario);
+            db.usuarioDAO().actualizar(usuario);
 
             // 4. Save to remote Firestore DB
             UsuarioRepository.updateUser(docId, usuario)

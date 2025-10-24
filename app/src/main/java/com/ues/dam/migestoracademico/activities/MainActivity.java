@@ -47,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_logout) {
             cerrarSesion();
             return true;
-        }else if (id == R.id.action_profile) {  
-               startActivity(new Intent(this, ProfileActivity.class));
-    return true;
-
+        }else if (id == R.id.action_profile) {
+            startActivity(new Intent(this, ProfileActivity.class));
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

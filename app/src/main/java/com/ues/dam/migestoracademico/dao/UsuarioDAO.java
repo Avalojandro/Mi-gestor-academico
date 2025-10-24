@@ -13,7 +13,7 @@ public interface UsuarioDAO {
     void crear(Usuario usuario);
 
     @Update
-    void crear(Usuario usauario);
+    void actualizar(Usuario usauario);
 
     @Query("SELECT * FROM usuarios WHERE email = :email AND password = :password")
     Usuario login(String email, String password);

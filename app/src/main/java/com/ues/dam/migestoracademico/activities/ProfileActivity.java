@@ -78,6 +78,9 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
             });
+        }else {
+
+            Toast.makeText(this, "No se pudo cargar el usuario", Toast.LENGTH_SHORT).show();
         }
     }
 }

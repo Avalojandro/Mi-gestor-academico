@@ -77,6 +77,8 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 Usuario usuarioEncontrado = db.usuarioDAO().login(email, contrasena);
                 AtomicReference<Usuario> usr = new AtomicReference<>();
+
+                AtomicReference<String> docId = new AtomicReference<>();
 //--------------------------------------------------------
                 UsuarioRepository.getUserByEmail(email)
                         .addOnCompleteListener(task -> {
@@ -92,15 +94,16 @@ public class LoginActivity extends AppCompatActivity {
                                     //agregado obtener el id del usauario 
                                     documentId = snapshot.getDocuments().get(0).getId();
                                     usr.set(usuarioEncontradoFirestore);
+                                    docId.set(documentId);
                                 }
                             } else {
                                 Log.e("ERROR", "Error al buscar usuario", task.getException());
                             }
                            //--
                             runOnUiThread(() -> {
-                                if (usuarioEncontrado != null && usr.get() != null && documentId != null) {
+                                if (usuarioEncontrado != null && usr.get() != null && docId.get() != null) {
                                     if (cbGuardarSesion.isChecked()){
-                                        guardarSesionActiva(email, documentId);
+                                        guardarSesionActiva(email, docId.get());
                                     }else {
                                         Toast.makeText(this, "No se va guardar la session", Toast.LENGTH_SHORT).show();
 
