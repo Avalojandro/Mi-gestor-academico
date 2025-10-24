@@ -34,6 +34,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String PREF_SESION = "SesionApp";
     private static final String CLAVE_SESION_ACTIVA = "sesionActiva";
+    private static final String CLAVE_EMAIL = "emailUsuario";
+    private static final String CLAVE_DOC_ID = "docIdUsuario";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,16 +81,16 @@ public class LoginActivity extends AppCompatActivity {
                 UsuarioRepository.getUserByEmail(email)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                // 2. Obtener el resultado como QuerySnapshot
+
                                 QuerySnapshot snapshot = task.getResult();
 
                                 Usuario usuarioEncontradoFirestore = null;
+                                String documentId = null;
 
-                                // 3. Verificar que el QuerySnapshot no sea nulo y contenga documentos
-                                if (snapshot != null && !snapshot.isEmpty()) {
-                                    // 4. Mapear el primer documento (limit(1) garantiza que solo habrá uno)
-                                    //    Usamos .toObject(Usuario.class) para la conversión automática
+                                if (snapshot != null && !snapshot.isEmpty() ) {
                                     usuarioEncontradoFirestore = snapshot.getDocuments().get(0).toObject(Usuario.class);
+                                    //agregado obtener el id del usauario 
+                                    documentId = snapshot.getDocuments().get(0).getId();
                                     usr.set(usuarioEncontradoFirestore);
                                 }
                             } else {
@@ -96,10 +98,9 @@ public class LoginActivity extends AppCompatActivity {
                             }
                            //--
                             runOnUiThread(() -> {
-                                if (usuarioEncontrado != null && usr.get() != null) {
-                                    //anadiendo logica para solo guardar la session cuando el checkbox esta activo
+                                if (usuarioEncontrado != null && usr.get() != null && documentId != null) {
                                     if (cbGuardarSesion.isChecked()){
-                                        guardarSesionActiva();
+                                        guardarSesionActiva(email, documentId);
                                     }else {
                                         Toast.makeText(this, "No se va guardar la session", Toast.LENGTH_SHORT).show();
 
@@ -124,10 +125,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void guardarSesionActiva() {
+    private void guardarSesionActiva(String email, String docId) {
         SharedPreferences preferencias = getSharedPreferences(PREF_SESION, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferencias.edit();
         editor.putBoolean(CLAVE_SESION_ACTIVA, true);
+        editor.putString(CLAVE_EMAIL, email);
+        editor.putString(CLAVE_DOC_ID, docId);
         editor.apply();
     }
 
