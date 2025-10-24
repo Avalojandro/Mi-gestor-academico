@@ -24,7 +24,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Usuario currentUser;
     private String docId;
 
-    private static final String PREF_SESION = "SesionApp";
+    private static final String PREF_PERFIL = "perfil";
     private static final String CLAVE_EMAIL = "emailUsuario";
     private static final String CLAVE_DOC_ID = "docIdUsuario";
 
@@ -62,7 +62,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void loadUserProfile() {
-        SharedPreferences prefs = getSharedPreferences(PREF_SESION, Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(PREF_PERFIL, Context.MODE_PRIVATE);
         String email = prefs.getString(CLAVE_EMAIL, null);
         docId = prefs.getString(CLAVE_DOC_ID, null);
 

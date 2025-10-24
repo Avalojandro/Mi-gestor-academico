@@ -33,9 +33,9 @@ public class LoginActivity extends AppCompatActivity {
     private CheckBox cbGuardarSesion;
 
     private static final String PREF_SESION = "SesionApp";
+    private static final String PREF_PERFIL = "perfil";
     private static final String CLAVE_SESION_ACTIVA = "sesionActiva";
-    private static final String CLAVE_EMAIL = "emailUsuario";
-    private static final String CLAVE_DOC_ID = "docIdUsuario";
+    private static final String CLAVE_EMAIL = "emailUsuario"; private static final String CLAVE_DOC_ID = "docIdUsuario";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                            //--
                             runOnUiThread(() -> {
                                 if (usuarioEncontrado != null && usr.get() != null && docId.get() != null) {
+                                    guardarPerfilDeUsuario(email, "perfil");
                                     if (cbGuardarSesion.isChecked()){
                                         guardarSesionActiva(email, docId.get());
                                     }else {
@@ -137,6 +138,15 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    private void guardarPerfilDeUsuario(String email, String docId) {
+        SharedPreferences preferencias = getSharedPreferences(PREF_PERFIL, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferencias.edit();
+        editor.putBoolean(CLAVE_SESION_ACTIVA, true);
+        editor.putString(CLAVE_EMAIL, email);
+        editor.putString(CLAVE_DOC_ID, docId);
+        editor.apply();
+    }
+
     public static boolean sesionActiva(Context contexto) {
         SharedPreferences preferencias = contexto.getSharedPreferences(PREF_SESION, Context.MODE_PRIVATE);
         return preferencias.getBoolean(CLAVE_SESION_ACTIVA, false);
@@ -147,6 +157,10 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = preferencias.edit();
         editor.clear();
         editor.apply();
+        SharedPreferences preferenciasPerfil = contexto.getSharedPreferences(PREF_PERFIL, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editorPerfil = preferenciasPerfil.edit();
+        editorPerfil.clear();
+        editorPerfil.apply();
     }
 
     private void irARegistro() {
