@@ -3,12 +3,13 @@
     <string name="mi_gestor">MI GESTOR</string>
     <string name="academico">ACADÉMICO</string>
     <string name="login_title">Inicia sesión</string>
-    <string name="username">Nombre de usuario</string>
+    <string name="email">Correo electronico</string>
     <string name="password">Contraseña</string>
     <string name="login">Acceder</string>
     <string name="or">o</string>
     <string name="register">Registrarse</string>
     <string name="create_account">Crea tu cuenta</string>
+    <string name="name">Ingesa tu nombre completo</string>
     <string name="already_have_account">¿Ya tienes una cuenta?</string>
     <string name="sign_in">Iniciar sesión</string>
     <string name="logging_in">Accediendo...</string>

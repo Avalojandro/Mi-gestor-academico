@@ -9,15 +9,18 @@ public class Usuario {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
-    @ColumnInfo(name = "username")
-    public String username;
+    @ColumnInfo(name = "email")
+    public String email;
+
+    @ColumnInfo(name = "name")
+    public String name;
 
     @ColumnInfo(name = "password")
     public String password;
 
-    public Usuario(String username, String password) {
-        this.username = username;
-        this.password = password
-        ;
+    public Usuario(String email, String password, String name) {
+        this.email = email;
+        this.name = name;
+        this.password = password;
     }
 }

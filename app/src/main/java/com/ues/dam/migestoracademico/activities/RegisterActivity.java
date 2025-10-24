@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText etUsuario, etContrasena;
+    private EditText etEmail, etContrasena, etNombre;
     private Button btnRegistrarse, btnIniciarSesion;
     private AppDB db;
 
@@ -44,32 +44,35 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void inicializarVistas() {
-        etUsuario = findViewById(R.id.etUsuario);
+        etEmail= findViewById(R.id.etEmail);
         etContrasena = findViewById(R.id.etContrasena);
+        etNombre = findViewById(R.id.etNombre);
         btnRegistrarse = findViewById(R.id.btnRegistrarse);
         btnIniciarSesion = findViewById(R.id.btnAcceder);
     }
 
     private void registrarUsuario() {
-        String usuario = etUsuario.getText().toString().trim();
+        String email = etEmail.getText().toString().trim();
         String contrasena = etContrasena.getText().toString().trim();
+        String name = etNombre.getText().toString().trim();
 
-        if (usuario.isEmpty() || contrasena.isEmpty()) {
+
+        if (email.isEmpty() || contrasena.isEmpty()) {
             Toast.makeText(this, "Complete todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                int existe = db.usuarioDAO().existeUsuario(usuario);
+                int existe = db.usuarioDAO().existeUsuario(email);
 
                 if (existe > 0) {
                     runOnUiThread(() ->
-                            Toast.makeText(RegisterActivity.this, "El usuario ya existe", Toast.LENGTH_SHORT).show());
+                            Toast.makeText(RegisterActivity.this, "El email ya existe", Toast.LENGTH_SHORT).show());
                     return;
                 }
 
-                Usuario nuevoUsuario = new Usuario(usuario, contrasena);
+                Usuario nuevoUsuario = new Usuario(email, contrasena, name );
                 db.usuarioDAO().crear(nuevoUsuario);
 
                 runOnUiThread(() -> {
@@ -80,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 runOnUiThread(() ->
-                        Toast.makeText(RegisterActivity.this, "Error al registrar usuario", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(RegisterActivity.this, "Error al registrar email", Toast.LENGTH_SHORT).show());
             }
         });
     }

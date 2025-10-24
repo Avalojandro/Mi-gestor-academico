@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText etUsuario, etContrasena;
+    private EditText etEmail, etContrasena;
     private Button btnAcceder, btnRegistrarse;
     private AppDB db;
     private CheckBox cbGuardarSesion;
@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void inicializarVistas() {
-        etUsuario = findViewById(R.id.etUsuario);
+        etEmail = findViewById(R.id.etEmail);
         etContrasena = findViewById(R.id.etContrasena);
         btnAcceder = findViewById(R.id.btnAcceder);
         btnRegistrarse = findViewById(R.id.btnRegistrarse);
@@ -59,17 +59,17 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void iniciarSesion() {
-        String usuario = etUsuario.getText().toString().trim();
+        String email = etEmail.getText().toString().trim();
         String contrasena = etContrasena.getText().toString().trim();
 
-        if (usuario.isEmpty() || contrasena.isEmpty()) {
+        if (email.isEmpty() || contrasena.isEmpty()) {
             Toast.makeText(this, "Complete todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                Usuario usuarioEncontrado = db.usuarioDAO().login(usuario, contrasena);
+                Usuario usuarioEncontrado = db.usuarioDAO().login(email, contrasena);
 
                 runOnUiThread(() -> {
                     if (usuarioEncontrado != null) {
@@ -80,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(this, "No se va guardar la session", Toast.LENGTH_SHORT).show();
 
                         }
+
 
                         Intent intent = new Intent(LoginActivity.this, SplashActivityAccess.class);
                         startActivity(intent);

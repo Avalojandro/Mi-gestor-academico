@@ -118,6 +118,23 @@
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="24dp">
 
+                <LinearLayout
+                    android:id="@+id/linearLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    tools:layout_editor_absoluteX="24dp"
+                    tools:layout_editor_absoluteY="24dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        app:srcCompat="@drawable/ic_pwd" />
+
+                </LinearLayout>
+
                 <FrameLayout
                     android:id="@+id/flUsuario"
                     android:layout_width="0dp"
@@ -140,11 +157,11 @@
                             app:srcCompat="@drawable/ic_username" />
 
                         <EditText
-                            android:id="@+id/etUsuario"
+                            android:id="@+id/etEmail"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
-                            android:hint="@string/username"
+                            android:hint="@string/email"
                             android:paddingStart="12dp"
                             android:textColor="@color/steel_blue"
                             android:textSize="15sp"
@@ -193,13 +210,14 @@
                     android:id="@+id/btnRegistrarse"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="76dp"
                     android:backgroundTint="@color/navy_blue"
                     android:text="@string/register"
                     android:textColor="@color/white"
-                    app:layout_constraintTop_toBottomOf="@id/flPassword"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/flPassword" />
 
                 <TextView
                     android:id="@+id/textView6"
@@ -225,6 +243,25 @@
                     app:layout_constraintTop_toBottomOf="@id/textView6"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
+
+                <EditText
+                    android:id="@+id/etNombre"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/name"
+                    android:inputType="textPassword"
+                    android:paddingStart="12dp"
+                    android:textColor="@color/steel_blue"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.461" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
