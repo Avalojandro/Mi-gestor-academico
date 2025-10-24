@@ -94,28 +94,29 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 Log.e("ERROR", "Error al buscar usuario", task.getException());
                             }
+                           //--
+                            runOnUiThread(() -> {
+                                if (usuarioEncontrado != null && usr.get() != null) {
+                                    //anadiendo logica para solo guardar la session cuando el checkbox esta activo
+                                    if (cbGuardarSesion.isChecked()){
+                                        guardarSesionActiva();
+                                    }else {
+                                        Toast.makeText(this, "No se va guardar la session", Toast.LENGTH_SHORT).show();
+
+                                    }
+
+
+                                    Intent intent = new Intent(LoginActivity.this, SplashActivityAccess.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(LoginActivity.this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         });
                 //-------------------------
 
-                //TODO verificar porque la condicion nunca pasa y no se puede iniciar session
-                runOnUiThread(() -> {
-                    if (usuarioEncontrado != null && usr.get() != null) {
-                        //anadiendo logica para solo guardar la session cuando el checkbox esta activo
-                        if (cbGuardarSesion.isChecked()){
-                            guardarSesionActiva();
-                        }else {
-                            Toast.makeText(this, "No se va guardar la session", Toast.LENGTH_SHORT).show();
 
-                        }
-
-
-                        Intent intent = new Intent(LoginActivity.this, SplashActivityAccess.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
-                    }
-                });
             } catch (Exception e) {
                 runOnUiThread(() ->
                         Toast.makeText(LoginActivity.this, "Error en el inicio de sesión", Toast.LENGTH_SHORT).show());
