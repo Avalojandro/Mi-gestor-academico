@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "429255375479",
+    "project_id": "irvin-dev",
+    "storage_bucket": "irvin-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:429255375479:android:00ecf6499a16da1aa02472",
+        "android_client_info": {
+          "package_name": "com.ues.dam.migestoracademico"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCypF8KPU4q4Yg-kl32i9ltpepsP18PShU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

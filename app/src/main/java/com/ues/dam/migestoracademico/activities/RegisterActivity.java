@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.ues.dam.migestoracademico.R;
 import com.ues.dam.migestoracademico.data.AppDB;
 import com.ues.dam.migestoracademico.entities.Usuario;
+import com.ues.dam.migestoracademico.repositories.UsuarioRepository;
 
 import java.util.concurrent.Executors;
 
@@ -73,6 +74,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 Usuario nuevoUsuario = new Usuario(email, contrasena, name );
+                UsuarioRepository.saveUser(new Usuario(email, contrasena, name));
                 db.usuarioDAO().crear(nuevoUsuario);
 
                 runOnUiThread(() -> {

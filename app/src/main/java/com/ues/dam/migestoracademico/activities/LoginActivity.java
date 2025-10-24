@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -15,11 +16,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ues.dam.migestoracademico.R;
 import com.ues.dam.migestoracademico.data.AppDB;
 import com.ues.dam.migestoracademico.entities.Usuario;
+import com.ues.dam.migestoracademico.repositories.UsuarioRepository;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -70,9 +74,32 @@ public class LoginActivity extends AppCompatActivity {
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 Usuario usuarioEncontrado = db.usuarioDAO().login(email, contrasena);
+                AtomicReference<Usuario> usr = new AtomicReference<>();
+//--------------------------------------------------------
+                UsuarioRepository.getUserByEmail(email)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                // 2. Obtener el resultado como QuerySnapshot
+                                QuerySnapshot snapshot = task.getResult();
 
+                                Usuario usuarioEncontradoFirestore = null;
+
+                                // 3. Verificar que el QuerySnapshot no sea nulo y contenga documentos
+                                if (snapshot != null && !snapshot.isEmpty()) {
+                                    // 4. Mapear el primer documento (limit(1) garantiza que solo habrá uno)
+                                    //    Usamos .toObject(Usuario.class) para la conversión automática
+                                    usuarioEncontradoFirestore = snapshot.getDocuments().get(0).toObject(Usuario.class);
+                                    usr.set(usuarioEncontradoFirestore);
+                                }
+                            } else {
+                                Log.e("ERROR", "Error al buscar usuario", task.getException());
+                            }
+                        });
+                //-------------------------
+
+                //TODO verificar porque la condicion nunca pasa y no se puede iniciar session
                 runOnUiThread(() -> {
-                    if (usuarioEncontrado != null) {
+                    if (usuarioEncontrado != null && usr.get() != null) {
                         //anadiendo logica para solo guardar la session cuando el checkbox esta activo
                         if (cbGuardarSesion.isChecked()){
                             guardarSesionActiva();
