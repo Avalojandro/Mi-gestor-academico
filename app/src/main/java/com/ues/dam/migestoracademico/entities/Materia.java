@@ -20,6 +20,7 @@ public class Materia {
     public String nombre;
     public String codigo;
     public int uv;
+    public String firestoreId;
 
     // ID del usuario en Firestore (para la nube)
     public String userDocId;
@@ -35,10 +36,12 @@ public class Materia {
     }
 
     // Constructor principal
-    public Materia(String nombre, String codigo, int uv, String userDocId, int userId) {
+
+    public Materia( String nombre, String codigo, int uv, String firestoreId, String userDocId, int userId) {
         this.nombre = nombre;
         this.codigo = codigo;
         this.uv = uv;
+        this.firestoreId = firestoreId;
         this.userDocId = userDocId;
         this.userId = userId;
     }
@@ -46,6 +49,62 @@ public class Materia {
     // --- Getters y Setters ---
     // (Puedes generarlos automáticamente en Android Studio)
     // (Asegúrate de poner @Exclude en los getters/setters de 'id' y 'userId' si los creas)
+
+
+    @Exclude
+    public int getUserId() {
+        return userId;
+    }
+
+    @Exclude
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getUserDocId() {
+        return userDocId;
+    }
+
+    public void setUserDocId(String userDocId) {
+        this.userDocId = userDocId;
+    }
+
+    public String getFirestoreId() {
+        return firestoreId;
+    }
+
+    public void setFirestoreId(String firestoreId) {
+        this.firestoreId = firestoreId;
+    }
+
+    public int getUv() {
+        return uv;
+    }
+
+    public void setUv(int uv) {
+        this.uv = uv;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    @Exclude
+    public void setId(int id) {
+        this.id = id;
+    }
 
     @Exclude
     public int getId() {

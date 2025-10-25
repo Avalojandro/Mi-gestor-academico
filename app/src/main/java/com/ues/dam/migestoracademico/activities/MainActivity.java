@@ -1,9 +1,11 @@
 package com.ues.dam.migestoracademico.activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -21,11 +23,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.ues.dam.migestoracademico.R;
 import com.ues.dam.migestoracademico.data.AppDB; // IMPORTAR
 import com.ues.dam.migestoracademico.entities.Materia;
+import com.ues.dam.migestoracademico.repositories.MateriaRepository;
 
 import java.util.List;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MateriaAdapter.OnMateriaListener {
 
     private AppDB db;
     private RecyclerView rvMaterias; // AÑADIR
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Configurar RecyclerView
         rvMaterias.setLayoutManager(new LinearLayoutManager(this));
-        materiaAdapter = new MateriaAdapter();
+        materiaAdapter = new MateriaAdapter(this);
         rvMaterias.setAdapter(materiaAdapter);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -64,9 +67,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         fabAddMateria.setOnClickListener(v -> {
-            // Aún no hemos creado esta actividad, pero así es como la llamaríamos
             // startActivity(new Intent(MainActivity.this, AddEditMateriaActivity.class));
-            Toast.makeText(this, "Funcionalidad de añadir pendiente", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MainActivity.this, AddMateriaActivity.class));
         });
 
         // Cargar las materias
@@ -139,5 +141,43 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();
+    }
+
+
+    @Override
+    public void onDeleteClick(Materia materia, int position) {
+        // Mostrar un diálogo de confirmación
+        new AlertDialog.Builder(this)
+                .setTitle("Confirmar Borrado")
+                .setMessage("¿Estás seguro de que quieres eliminar la materia '" + materia.nombre + "'?")
+                .setPositiveButton("Sí, Eliminar", (dialog, which) -> {
+                    borrarMateria(materia, position);
+                })
+                .setNegativeButton("Cancelar", null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    private void borrarMateria(Materia materia, int position) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            // 1. Borrar de Room
+            db.materiaDAO().eliminar(materia);
+
+            // 2. Borrar de Firestore
+            if (materia.firestoreId != null && !materia.firestoreId.isEmpty()) {
+                MateriaRepository.eliminar(materia.firestoreId)
+                        .addOnFailureListener(e -> {
+                            // Opcional: Manejar error de borrado en Firestore
+                            // Por ahora, solo lo mostraremos en el log
+                            Log.e("FirestoreDelete", "Error al borrar materia de Firestore", e);
+                        });
+            }
+
+            // 3. Actualizar la UI en el hilo principal
+            runOnUiThread(() -> {
+                materiaAdapter.removerMateria(position);
+                Toast.makeText(this, "Materia eliminada", Toast.LENGTH_SHORT).show();
+            });
+        });
     }
 }
