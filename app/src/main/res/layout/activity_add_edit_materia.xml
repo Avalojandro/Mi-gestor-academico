@@ -5,15 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".activities.AddMateriaActivity">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nueva Materia"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp"/>
+    tools:context=".activities.AddEditMateriaActivity"> <TextView
+    android:id="@+id/tvTituloForm" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Nueva Materia" android:textSize="24sp"
+    android:textStyle="bold"
+    android:layout_marginBottom="24dp"/>
 
     <EditText
         android:id="@+id/etMateriaNombre"
@@ -43,6 +40,4 @@
         android:id="@+id/btnGuardarMateria"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Guardar Materia"/>
-
-</LinearLayout>
+        android:text="Guardar Materia"/> </LinearLayout>

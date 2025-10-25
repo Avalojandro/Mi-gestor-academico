@@ -46,7 +46,7 @@
         <!-- AGREGAR MATERIA -->
 
         <activity
-            android:name=".activities.AddMateriaActivity"
+            android:name=".activities.AddEditMateriaActivity"
             android:exported="false" />
 
 

@@ -23,6 +23,7 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
     // --- INTERFAZ PARA EL LISTENER ---
     public interface OnMateriaListener {
         void onDeleteClick(Materia materia, int position);
+        void onEditClick(Materia materia);
     }
 
     // --- MODIFICAR CONSTRUCTOR ---
@@ -85,6 +86,13 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
                     listener.onDeleteClick(materias.get(position), position);
+                }
+            });
+
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onEditClick(materias.get(position));
                 }
             });
         }

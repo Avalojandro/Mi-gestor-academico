@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
 
         fabAddMateria.setOnClickListener(v -> {
             // startActivity(new Intent(MainActivity.this, AddEditMateriaActivity.class));
-            startActivity(new Intent(MainActivity.this, AddMateriaActivity.class));
+            startActivity(new Intent(MainActivity.this, AddEditMateriaActivity.class));
         });
 
         // Cargar las materias
@@ -125,6 +125,14 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onEditClick(Materia materia) {
+        Intent intent = new Intent(MainActivity.this, AddEditMateriaActivity.class);
+        // Pasamos el ID de ROOM de la materia para que la otra actividad la cargue
+        intent.putExtra("MATERIA_ID", materia.id);
+        startActivity(intent);
     }
 
     private void cerrarSesion() {
