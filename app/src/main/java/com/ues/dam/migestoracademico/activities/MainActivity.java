@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,12 +26,18 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Abrir AddSubjectActivity al tocar el botón +
+        ImageButton addSubjectButton = findViewById(R.id.addSubject);
+        addSubjectButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AddSubjectActivity.class);
+            startActivity(intent);
+        });
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
     }
 
     @Override
@@ -43,12 +49,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_logout) {
             cerrarSesion();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -58,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage("¿Estás seguro de que quieres cerrar sesión?")
                 .setPositiveButton("Sí", (dialog, which) -> {
                     LoginActivity.cerrarSesion(this);
-
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

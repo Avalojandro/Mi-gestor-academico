@@ -12,4 +12,6 @@
     <string name="already_have_account">¿Ya tienes una cuenta?</string>
     <string name="sign_in">Iniciar sesión</string>
     <string name="logging_in">Accediendo...</string>
+    <string name="panel">Panel</string>
+    <string name="add">Agregar</string>
 </resources>
