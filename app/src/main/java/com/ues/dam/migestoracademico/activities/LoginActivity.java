@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                            //--
                             runOnUiThread(() -> {
                                 if (usuarioEncontrado != null && usr.get() != null && docId.get() != null) {
-                                    guardarPerfilDeUsuario(email, "perfil");
+                                    guardarPerfilDeUsuario(email, docId.get());
                                     if (cbGuardarSesion.isChecked()){
                                         guardarSesionActiva(email, docId.get());
                                     }else {
