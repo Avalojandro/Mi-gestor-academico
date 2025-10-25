@@ -35,7 +35,9 @@ public class LoginActivity extends AppCompatActivity {
     private static final String PREF_SESION = "SesionApp";
     private static final String PREF_PERFIL = "perfil";
     private static final String CLAVE_SESION_ACTIVA = "sesionActiva";
-    private static final String CLAVE_EMAIL = "emailUsuario"; private static final String CLAVE_DOC_ID = "docIdUsuario";
+    private static final String CLAVE_EMAIL = "emailUsuario";
+    private static final String CLAVE_DOC_ID = "docIdUsuario";
+    private static final String CLAVE_ROOM_ID = "roomUsuarioId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                            //--
                             runOnUiThread(() -> {
                                 if (usuarioEncontrado != null && usr.get() != null && docId.get() != null) {
-                                    guardarPerfilDeUsuario(email, docId.get());
+                                    guardarPerfilDeUsuario(email, docId.get(), usuarioEncontrado.id);
                                     if (cbGuardarSesion.isChecked()){
                                         guardarSesionActiva(email, docId.get());
                                     }else {
@@ -138,12 +140,13 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private void guardarPerfilDeUsuario(String email, String docId) {
+    private void guardarPerfilDeUsuario(String email, String docId, int roomId) {
         SharedPreferences preferencias = getSharedPreferences(PREF_PERFIL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferencias.edit();
         editor.putBoolean(CLAVE_SESION_ACTIVA, true);
         editor.putString(CLAVE_EMAIL, email);
         editor.putString(CLAVE_DOC_ID, docId);
+        editor.putInt(CLAVE_ROOM_ID, roomId);
         editor.apply();
     }
 
