@@ -50,10 +50,24 @@
             android:background="@color/steel_blue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvDashboard"
+            app:layout_constraintVertical_bias="0.0"
             tools:listitem="@layout/item_materia" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="96dp"
+        android:contentDescription="Abrir pantalla en blanco"
+        android:src="@android:drawable/ic_menu_mapmode"
+        app:backgroundTint="@color/navy_blue"
+        app:tint="@android:color/white" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddMateria"

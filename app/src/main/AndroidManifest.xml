@@ -13,6 +13,7 @@
         android:theme="@style/Theme.MiGestorAcademico"
         tools:targetApi="31">
 
+
         <!-- SPLASH INICIAL -->
         <activity
             android:name=".activities.SplashActivity"
@@ -60,6 +61,13 @@
 <activity
     android:name=".activities.EditProfileActivity"
     android:exported="false" />
+
+        <!-- Mapa -->
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAvP4EX4aRuNEFW9Jn7L5DtA1dhQV3jWDo"/>
+        <activity android:name=".activities.MapActivity" />
 
     </application>
 
