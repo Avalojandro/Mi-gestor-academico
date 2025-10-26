@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
         db = AppDB.getInstance(this);
         rvMaterias = findViewById(R.id.rvMaterias);
         fabAddMateria = findViewById(R.id.fabAddMateria);
-        fabMap = findViewById(R.id.fabMap); // inicializar FAB del mapa
+        fabMap = findViewById(R.id.fabMap);
 
         // Configurar RecyclerView
         rvMaterias.setLayoutManager(new LinearLayoutManager(this));
@@ -68,12 +68,12 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
             return insets;
         });
 
-        // Botón para agregar materia
+        // Agregar materia
         fabAddMateria.setOnClickListener(v ->
                 startActivity(new Intent(MainActivity.this, AddEditMateriaActivity.class))
         );
 
-        // Botón para abrir el mapa
+        // Abrir el mapa
         fabMap.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MapActivity.class);
             startActivity(intent);
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
     @Override
     protected void onResume() {
         super.onResume();
-        // Recargar materias al volver a esta pantalla
+        // Recargar materias al volver al home
         loadMaterias();
     }
 
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
         int userRoomId = prefs.getInt(CLAVE_ROOM_ID, -1);
 
         if (userRoomId == -1) {
-            Toast.makeText(this, "Error: No se pudo identificar al usuario", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error al identificar al usuario", Toast.LENGTH_SHORT).show();
             return;
         }
 

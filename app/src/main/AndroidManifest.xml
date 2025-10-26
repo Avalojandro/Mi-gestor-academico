@@ -32,6 +32,7 @@
         <!-- REGISTRO -->
         <activity
             android:name=".activities.RegisterActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
 
         <!-- SPLASH ACCESO -->
@@ -51,16 +52,15 @@
             android:exported="false" />
 
 
-
         <!-- Perfil y edit perfil -->
 
-            <activity
-    android:name=".activities.ProfileActivity"
-    android:exported="false" />
+        <activity
+            android:name=".activities.ProfileActivity"
+            android:exported="false" />
 
-<activity
-    android:name=".activities.EditProfileActivity"
-    android:exported="false" />
+        <activity
+             android:name=".activities.EditProfileActivity"
+             android:exported="false" />
 
         <!-- Mapa -->
 

@@ -2,6 +2,7 @@ package com.ues.dam.migestoracademico.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -45,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void inicializarVistas() {
-        etEmail= findViewById(R.id.etEmail);
+        etEmail = findViewById(R.id.etEmail);
         etContrasena = findViewById(R.id.etContrasena);
         etNombre = findViewById(R.id.etNombre);
         btnRegistrarse = findViewById(R.id.btnRegistrarse);
@@ -57,12 +58,41 @@ public class RegisterActivity extends AppCompatActivity {
         String contrasena = etContrasena.getText().toString().trim();
         String name = etNombre.getText().toString().trim();
 
-
-        if (email.isEmpty() || contrasena.isEmpty()) {
-            Toast.makeText(this, "Complete todos los campos", Toast.LENGTH_SHORT).show();
+        // Validaciones
+        if (name.isEmpty()) {
+            etNombre.setError("El nombre es obligatorio");
+            etNombre.requestFocus();
+            return;
+        }
+        if (!isValidName(name)) {
+            etNombre.setError("El nombre solo puede tener letras y espacios");
+            etNombre.requestFocus();
             return;
         }
 
+        if (email.isEmpty()) {
+            etEmail.setError("El email es obligatorio");
+            etEmail.requestFocus();
+            return;
+        }
+        if (!isValidEmail(email)) {
+            etEmail.setError("Formato de email inválido");
+            etEmail.requestFocus();
+            return;
+        }
+
+        if (contrasena.isEmpty()) {
+            etContrasena.setError("La contraseña es obligatoria");
+            etContrasena.requestFocus();
+            return;
+        }
+        if (!isValidPassword(contrasena)) {
+            etContrasena.setError("Mín. 8 caracteres, alfanumérica (al menos 1 letra y 1 número)");
+            etContrasena.requestFocus();
+            return;
+        }
+
+        // Formatos validos, siguiente paso
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 int existe = db.usuarioDAO().existeUsuario(email);
@@ -73,7 +103,7 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                Usuario nuevoUsuario = new Usuario(email, contrasena, name );
+                Usuario nuevoUsuario = new Usuario(email, contrasena, name);
                 UsuarioRepository.saveUser(new Usuario(email, contrasena, name));
                 db.usuarioDAO().crear(nuevoUsuario);
 
@@ -88,6 +118,18 @@ public class RegisterActivity extends AppCompatActivity {
                         Toast.makeText(RegisterActivity.this, "Error al registrar email", Toast.LENGTH_SHORT).show());
             }
         });
+    }
+
+    private boolean isValidEmail(String email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private boolean isValidPassword(String pwd) {
+        return pwd.length() >= 8 && pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$");
+    }
+
+    private boolean isValidName(String name) {
+        return name.matches("^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s]{2,}$");
     }
 
     private void irALogin() {

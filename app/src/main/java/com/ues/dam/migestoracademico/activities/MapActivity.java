@@ -32,10 +32,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Ubicación por defecto
         LatLng defaultLocation = new LatLng(13.6929, -89.2182);
 
-        // Marker y zoom
         mMap.addMarker(new MarkerOptions()
                 .position(defaultLocation)
                 .title("San Salvador"));
