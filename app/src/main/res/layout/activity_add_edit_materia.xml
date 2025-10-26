@@ -3,41 +3,59 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/steel_blue"
     android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".activities.AddEditMateriaActivity"> <TextView
-    android:id="@+id/tvTituloForm" android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Nueva Materia" android:textSize="24sp"
-    android:textStyle="bold"
-    android:layout_marginBottom="24dp"/>
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    android:paddingTop="40dp"
+    tools:context=".activities.AddEditMateriaActivity">
+
+    <TextView
+        android:id="@+id/tvTituloForm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Nueva Materia"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/etMateriaNombre"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:hint="Nombre de la materia"
         android:inputType="textCapWords"
-        android:layout_marginBottom="16dp"/>
+        android:textColor="@color/white"
+        android:textColorHint="@color/light_gray" />
 
     <EditText
         android:id="@+id/etMateriaCodigo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:hint="Código (ej: PDM115)"
-        android:inputType="textCapCharacters"
-        android:layout_marginBottom="16dp"/>
+        android:textColor="@color/white"
+        android:textColorHint="@color/light_gray"
+        android:inputType="textCapCharacters" />
 
     <EditText
         android:id="@+id/etMateriaUV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/light_gray"
         android:hint="Unidades Valorativas (ej: 4)"
-        android:inputType="number"
-        android:layout_marginBottom="24dp"/>
+        android:inputType="number" />
 
     <Button
         android:id="@+id/btnGuardarMateria"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Guardar Materia"/> </LinearLayout>
+        android:backgroundTint="@color/navy_blue"
+        android:text="Guardar Materia"
+        android:textColor="@color/white" />
+</LinearLayout>

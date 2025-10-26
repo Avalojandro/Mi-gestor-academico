@@ -5,52 +5,63 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/steel_blue"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    android:paddingTop="40dp"
     tools:context=".activities.EditProfileActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
         android:text="Editar Perfil"
+        android:textColor="@color/white"
         android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp"/>
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nombre:"
-        android:textSize="16sp"/>
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/etEditName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:hint="Ingresa tu nombre"
         android:inputType="textPersonName"
-        android:textSize="20sp"
-        android:layout_marginBottom="16dp"/>
+        android:textColor="@color/white"
+        android:textColorHint="@color/light_gray"
+        android:textSize="20sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Email (no se puede cambiar):"
-        android:textSize="16sp"/>
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/tvEditEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@android:color/darker_gray"
         android:layout_marginBottom="32dp"
-        tools:text="usuario@email.com"/>
+        android:textColor="@android:color/darker_gray"
+        android:textSize="20sp"
+        tools:text="usuario@email.com" />
 
     <Button
         android:id="@+id/btnSaveProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Guardar Cambios" />
+        android:backgroundTint="@color/navy_blue"
+        android:text="Guardar Cambios"
+        android:textColor="@color/white" />
 
 </LinearLayout>
