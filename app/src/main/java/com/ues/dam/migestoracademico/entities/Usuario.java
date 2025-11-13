@@ -12,11 +12,15 @@ public class Usuario {
     @ColumnInfo(name = "username")
     public String username;
 
+    @ColumnInfo(name = "email")
+    public String email;
+
     @ColumnInfo(name = "password")
     public String password;
 
-    public Usuario(String username, String password) {
+    public Usuario(String username, String email, String password) {
         this.username = username;
+        this.email = email;
         this.password = password;
     }
 }

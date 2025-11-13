@@ -11,9 +11,6 @@ public interface UsuarioDAO {
     @Insert
     void crear(Usuario usuario);
 
-    @Query("SELECT * FROM usuarios WHERE username = :username AND password = :password")
-    Usuario login(String username, String password);
-
     @Query("SELECT * FROM usuarios WHERE username = :username")
     Usuario buscarPorUsername(String username);
 
