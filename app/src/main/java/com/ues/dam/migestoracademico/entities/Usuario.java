@@ -21,6 +21,9 @@ public class Usuario {
     @ColumnInfo(name = "name")
     public String name;
 
+    @ColumnInfo(name = "email")
+    public String email;
+
     @ColumnInfo(name = "password")
     public String password;
 

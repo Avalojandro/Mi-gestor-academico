@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -22,6 +24,9 @@ import com.ues.dam.migestoracademico.data.AppDB;
 import com.ues.dam.migestoracademico.entities.Usuario;
 import com.ues.dam.migestoracademico.repositories.UsuarioRepository;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -29,8 +34,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText etEmail, etContrasena;
     private Button btnAcceder, btnRegistrarse;
+    private CheckBox cbGuardarSesion;
     private AppDB db;
     private CheckBox cbGuardarSesion;
+    private boolean isPasswordVisible = false;
 
     private static final String PREF_SESION = "SesionApp";
     private static final String PREF_PERFIL = "perfil";
@@ -51,11 +58,29 @@ public class LoginActivity extends AppCompatActivity {
             return insets;
         });
 
-        inicializarVistas();
+        etUsuario = findViewById(R.id.etUsuario);
+        etContrasena = findViewById(R.id.etContrasena);
+        btnAcceder = findViewById(R.id.btnAcceder);
+        btnRegistrarse = findViewById(R.id.btnRegistrarse);
+        cbGuardarSesion = findViewById(R.id.guardarSesion);
+
+        ImageView togglePasswordVisibilityImageView = findViewById(R.id.togglePasswordVisibilityImageView);
         db = AppDB.getInstance(this);
 
         btnAcceder.setOnClickListener(v -> iniciarSesion());
         btnRegistrarse.setOnClickListener(v -> irARegistro());
+
+        togglePasswordVisibilityImageView.setOnClickListener(v -> {
+            if (isPasswordVisible) {
+                etContrasena.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                togglePasswordVisibilityImageView.setImageResource(R.drawable.ic_eye_closed);
+            } else {
+                etContrasena.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                togglePasswordVisibilityImageView.setImageResource(R.drawable.ic_eye_open);
+            }
+            etContrasena.setSelection(etContrasena.getText().length());
+            isPasswordVisible = !isPasswordVisible;
+        });
     }
 
     private void inicializarVistas() {
@@ -64,6 +89,20 @@ public class LoginActivity extends AppCompatActivity {
         btnAcceder = findViewById(R.id.btnAcceder);
         btnRegistrarse = findViewById(R.id.btnRegistrarse);
         cbGuardarSesion = findViewById(R.id.guardarSesion);
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error en el hashing de contraseña", e);
+        }
     }
 
     private void iniciarSesion() {
@@ -124,9 +163,30 @@ public class LoginActivity extends AppCompatActivity {
                 //-------------------------
 
 
+                Usuario usuarioEncontrado = db.usuarioDAO().buscarPorUsername(usuario);
+
+                boolean loginExitoso = false;
+                if (usuarioEncontrado != null) {
+                    String contrasenaHashIngresada = hashPassword(contrasena);
+                    loginExitoso = usuarioEncontrado.password.equals(contrasenaHashIngresada);
+                }
+
+                final boolean finalLoginExitoso = loginExitoso;
+                runOnUiThread(() -> {
+                    if (finalLoginExitoso) {
+                        if (cbGuardarSesion.isChecked()) {
+                            guardarSesionActiva();
+                        }
+                        Intent intent = new Intent(LoginActivity.this, SplashActivityAccess.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                    }
+                });
             } catch (Exception e) {
                 runOnUiThread(() ->
-                        Toast.makeText(LoginActivity.this, "Error en el inicio de sesión", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(LoginActivity.this, "Error en el inicio de sesión: " + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
         });
     }
@@ -150,13 +210,13 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    public static boolean sesionActiva(Context contexto) {
-        SharedPreferences preferencias = contexto.getSharedPreferences(PREF_SESION, Context.MODE_PRIVATE);
+    public static boolean sesionActiva(Context context) {
+        SharedPreferences preferencias = context.getSharedPreferences(PREF_SESION, Context.MODE_PRIVATE);
         return preferencias.getBoolean(CLAVE_SESION_ACTIVA, false);
     }
 
-    public static void cerrarSesion(Context contexto) {
-        SharedPreferences preferencias = contexto.getSharedPreferences(PREF_SESION, Context.MODE_PRIVATE);
+    public static void cerrarSesion(Context context) {
+        SharedPreferences preferencias = context.getSharedPreferences(PREF_SESION, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferencias.edit();
         editor.clear();
         editor.apply();
