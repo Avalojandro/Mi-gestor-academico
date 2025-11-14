@@ -118,23 +118,6 @@
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="40dp">
 
-                <LinearLayout
-                    android:id="@+id/linearLayout2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp"
-                    tools:layout_editor_absoluteX="24dp"
-                    tools:layout_editor_absoluteY="24dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        app:srcCompat="@drawable/ic_pwd" />
-
-                </LinearLayout>
-
                 <FrameLayout
                     android:id="@+id/flUsuario"
                     android:layout_width="0dp"
@@ -158,11 +141,11 @@
                             android:tint="@color/gray"/>
 
                         <EditText
-                            android:id="@+id/etEmail"
+                            android:id="@+id/etUsuario"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
-                            android:hint="@string/email"
+                            android:hint="@string/username"
                             android:paddingStart="12dp"
                             android:textColor="@color/navy_blue"
                             android:textColorHint="@color/steel_blue"
@@ -328,25 +311,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:cornerRadius="10dp"/>
-
-                <EditText
-                    android:id="@+id/etNombre"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:hint="@string/name"
-                    android:inputType="textPassword"
-                    android:paddingStart="12dp"
-                    android:textColor="@color/steel_blue"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.461" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

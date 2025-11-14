@@ -3,7 +3,7 @@
     <string name="mi_gestor">MI GESTOR</string>
     <string name="academico">ACADÉMICO</string>
     <string name="login_title">Inicia sesión</string>
-    <string name="email">Correo electronico</string>
+    <string name="username">Nombre de usuario</string>
     <string name="password">Contraseña</string>
     <string name="email">Correo electrónico</string>
     <string name="login">Acceder</string>

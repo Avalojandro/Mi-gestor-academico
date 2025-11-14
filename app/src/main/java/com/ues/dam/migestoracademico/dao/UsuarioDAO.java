@@ -3,7 +3,6 @@ package com.ues.dam.migestoracademico.dao;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
-import androidx.room.Update;
 
 import com.ues.dam.migestoracademico.entities.Usuario;
 
@@ -12,17 +11,9 @@ public interface UsuarioDAO {
     @Insert
     void crear(Usuario usuario);
 
-    @Update
-    void actualizar(Usuario usauario);
+    @Query("SELECT * FROM usuarios WHERE username = :username")
+    Usuario buscarPorUsername(String username);
 
-    @Query("SELECT * FROM usuarios WHERE email = :email AND password = :password")
-    Usuario login(String email, String password);
-
-    @Query("SELECT * FROM usuarios WHERE email = :email")
-    Usuario buscarPorEmail(String email);
-
-    @Query("SELECT COUNT(*) FROM usuarios WHERE email = :email")
-    int existeUsuario(String email);
+    @Query("SELECT COUNT(*) FROM usuarios WHERE username = :username")
+    int existeUsuario(String username);
 }
-
-
