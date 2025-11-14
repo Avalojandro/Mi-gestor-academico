@@ -2,9 +2,12 @@ package com.ues.dam.migestoracademico.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -25,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etEmail, etContrasena, etNombre;
     private Button btnRegistrarse, btnIniciarSesion;
     private AppDB db;
+    private boolean isPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,20 +42,31 @@ public class RegisterActivity extends AppCompatActivity {
             return insets;
         });
 
-        inicializarVistas();
+        etNombre = findViewById(R.id.etNombre);
+        etContrasena = findViewById(R.id.etContrasena);
+        etEmail = findViewById(R.id.etEmail);
+        btnRegistrarse = findViewById(R.id.btnRegistrarse);
+        btnIniciarSesion = findViewById(R.id.btnAcceder);
+
+        ImageView togglePasswordVisibilityImageView = findViewById(R.id.togglePasswordVisibilityImageView);
         db = AppDB.getInstance(this);
 
         btnRegistrarse.setOnClickListener(v -> registrarUsuario());
         btnIniciarSesion.setOnClickListener(v -> irALogin());
+
+        togglePasswordVisibilityImageView.setOnClickListener(v -> {
+            if (isPasswordVisible) {
+                etContrasena.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                togglePasswordVisibilityImageView.setImageResource(R.drawable.ic_eye_closed);
+            } else {
+                etContrasena.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                togglePasswordVisibilityImageView.setImageResource(R.drawable.ic_eye_open);
+            }
+            etContrasena.setSelection(etContrasena.getText().length());
+            isPasswordVisible = !isPasswordVisible;
+        });
     }
 
-    private void inicializarVistas() {
-        etEmail = findViewById(R.id.etEmail);
-        etContrasena = findViewById(R.id.etContrasena);
-        etNombre = findViewById(R.id.etNombre);
-        btnRegistrarse = findViewById(R.id.btnRegistrarse);
-        btnIniciarSesion = findViewById(R.id.btnAcceder);
-    }
 
     private void registrarUsuario() {
         String email = etEmail.getText().toString().trim();

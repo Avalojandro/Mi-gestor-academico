@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -31,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnAcceder, btnRegistrarse;
     private AppDB db;
     private CheckBox cbGuardarSesion;
+    private boolean isPasswordVisible = false;
 
     private static final String PREF_SESION = "SesionApp";
     private static final String PREF_PERFIL = "perfil";
@@ -51,20 +55,31 @@ public class LoginActivity extends AppCompatActivity {
             return insets;
         });
 
-        inicializarVistas();
-        db = AppDB.getInstance(this);
-
-        btnAcceder.setOnClickListener(v -> iniciarSesion());
-        btnRegistrarse.setOnClickListener(v -> irARegistro());
-    }
-
-    private void inicializarVistas() {
         etEmail = findViewById(R.id.etEmail);
         etContrasena = findViewById(R.id.etContrasena);
         btnAcceder = findViewById(R.id.btnAcceder);
         btnRegistrarse = findViewById(R.id.btnRegistrarse);
         cbGuardarSesion = findViewById(R.id.guardarSesion);
+
+        ImageView togglePasswordVisibilityImageView = findViewById(R.id.togglePasswordVisibilityImageView);
+        db = AppDB.getInstance(this);
+
+        btnAcceder.setOnClickListener(v -> iniciarSesion());
+        btnRegistrarse.setOnClickListener(v -> irARegistro());
+
+        togglePasswordVisibilityImageView.setOnClickListener(v -> {
+            if (isPasswordVisible) {
+                etContrasena.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                togglePasswordVisibilityImageView.setImageResource(R.drawable.ic_eye_closed);
+            } else {
+                etContrasena.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                togglePasswordVisibilityImageView.setImageResource(R.drawable.ic_eye_open);
+            }
+            etContrasena.setSelection(etContrasena.getText().length());
+            isPasswordVisible = !isPasswordVisible;
+        });
     }
+
 
     private void iniciarSesion() {
         String email = etEmail.getText().toString().trim();
@@ -108,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                                     if (cbGuardarSesion.isChecked()){
                                         guardarSesionActiva(email, docId.get());
                                     }else {
-                                        Toast.makeText(this, "No se va guardar la session", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(this, "No se va a guardar la sesión", Toast.LENGTH_SHORT).show();
 
                                     }
 
@@ -150,17 +165,17 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    public static boolean sesionActiva(Context contexto) {
-        SharedPreferences preferencias = contexto.getSharedPreferences(PREF_SESION, Context.MODE_PRIVATE);
+    public static boolean sesionActiva(Context context) {
+        SharedPreferences preferencias = context.getSharedPreferences(PREF_SESION, Context.MODE_PRIVATE);
         return preferencias.getBoolean(CLAVE_SESION_ACTIVA, false);
     }
 
-    public static void cerrarSesion(Context contexto) {
-        SharedPreferences preferencias = contexto.getSharedPreferences(PREF_SESION, Context.MODE_PRIVATE);
+    public static void cerrarSesion(Context context) {
+        SharedPreferences preferencias = context.getSharedPreferences(PREF_SESION, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferencias.edit();
         editor.clear();
         editor.apply();
-        SharedPreferences preferenciasPerfil = contexto.getSharedPreferences(PREF_PERFIL, Context.MODE_PRIVATE);
+        SharedPreferences preferenciasPerfil = context.getSharedPreferences(PREF_PERFIL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editorPerfil = preferenciasPerfil.edit();
         editorPerfil.clear();
         editorPerfil.apply();
