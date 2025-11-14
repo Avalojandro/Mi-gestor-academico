@@ -141,11 +141,11 @@
                             android:tint="@color/gray"/>
 
                         <EditText
-                            android:id="@+id/etEmail"
+                            android:id="@+id/etUsuario"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
-                            android:hint="@string/email"
+                            android:hint="@string/username"
                             android:paddingStart="12dp"
                             android:textColor="@color/navy_blue"
                             android:textColorHint="@color/steel_blue"

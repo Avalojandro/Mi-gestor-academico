@@ -19,7 +19,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.ues.dam.migestoracademico.R;
 import com.ues.dam.migestoracademico.data.AppDB;
 import com.ues.dam.migestoracademico.entities.Usuario;
-import com.ues.dam.migestoracademico.repositories.UsuarioRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -28,7 +27,7 @@ import java.util.concurrent.Executors;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText etEmail, etContrasena, etNombre;
+    private EditText etUsuario, etContrasena, etEmail;
     private Button btnRegistrarse, btnIniciarSesion;
     private AppDB db;
     private boolean isPasswordVisible = false;
@@ -70,21 +69,28 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void inicializarVistas() {
-        etEmail= findViewById(R.id.etEmail);
-        etContrasena = findViewById(R.id.etContrasena);
-        etNombre = findViewById(R.id.etNombre);
-        btnRegistrarse = findViewById(R.id.btnRegistrarse);
-        btnIniciarSesion = findViewById(R.id.btnAcceder);
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error en el hashing de contraseña", e);
+        }
     }
 
     private void registrarUsuario() {
-        String email = etEmail.getText().toString().trim();
+        String usuario = etUsuario.getText().toString().trim();
         String contrasena = etContrasena.getText().toString().trim();
-        String name = etNombre.getText().toString().trim();
+        String email = etEmail.getText().toString().trim();
 
-
-        if (email.isEmpty() || contrasena.isEmpty()) {
+        if (usuario.isEmpty() || contrasena.isEmpty() || email.isEmpty()) {
             Toast.makeText(this, "Complete todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -106,16 +112,16 @@ public class RegisterActivity extends AppCompatActivity {
 
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                int existe = db.usuarioDAO().existeUsuario(email);
+                int existe = db.usuarioDAO().existeUsuario(usuario);
 
                 if (existe > 0) {
                     runOnUiThread(() ->
-                            Toast.makeText(RegisterActivity.this, "El email ya existe", Toast.LENGTH_SHORT).show());
+                            Toast.makeText(RegisterActivity.this, "El usuario ya existe", Toast.LENGTH_SHORT).show());
                     return;
                 }
 
-                Usuario nuevoUsuario = new Usuario(email, contrasena, name );
-                UsuarioRepository.saveUser(new Usuario(email, contrasena, name));
+                String contrasenaHash = hashPassword(contrasena);
+                Usuario nuevoUsuario = new Usuario(usuario, email, contrasenaHash);
                 db.usuarioDAO().crear(nuevoUsuario);
 
                 runOnUiThread(() -> {
@@ -126,7 +132,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 runOnUiThread(() ->
-                        Toast.makeText(RegisterActivity.this, "Error al registrar email", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(RegisterActivity.this, "Error al registrar usuario: " + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
         });
     }
