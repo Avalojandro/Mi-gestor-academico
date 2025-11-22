@@ -29,16 +29,18 @@ public class SplashActivity extends AppCompatActivity {
                 .build();
         db.setFirestoreSettings(settings);
 
-        // Forzar el intento de reconexión y sincronización
+        // Forzar el intento de reconexion y sincronizacion
         db.enableNetwork();
 
         new Handler().postDelayed(() -> {
-            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-            if (firebaseAuth.getCurrentUser() != null) {
-                // Usuario ya está logueado, ir al dashboard
+            if (FirebaseAuth.getInstance().getCurrentUser() != null && LoginActivity.sesionActiva(this)) {
+                // usuario ya esta logueado y la sesion esta guardada
                 startActivity(new Intent(this, SplashActivityAccess.class));
             } else {
-                // Usuario no logueado, ir al login
+                // s i no hay usuario logueado o no se guardo la sesion, cerrar sesion de
+                // firebase y ir al login
+                FirebaseAuth.getInstance().signOut();
+                LoginActivity.cerrarSesion(this); // Limpiar SharedPreferences
                 startActivity(new Intent(this, LoginActivity.class));
             }
             finish();

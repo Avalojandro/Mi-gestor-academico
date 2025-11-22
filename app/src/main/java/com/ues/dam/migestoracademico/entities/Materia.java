@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 
 import com.google.firebase.firestore.Exclude;
 
-@Entity(tableName = "materias", indices = {@Index(value = "user_id")})
+@Entity(tableName = "materias", indices = { @Index(value = "user_id") })
 public class Materia {
 
     // ID local para Room.
@@ -31,13 +31,11 @@ public class Materia {
     @Exclude
     public int userId;
 
-    // Constructor vacío requerido por Firestore
+    // Constructor vacio requerido por Firestore
     public Materia() {
     }
 
-    // Constructor principal
-
-    public Materia( String nombre, String codigo, int uv, String firestoreId, String userDocId, int userId) {
+    public Materia(String nombre, String codigo, int uv, String firestoreId, String userDocId, int userId) {
         this.nombre = nombre;
         this.codigo = codigo;
         this.uv = uv;
@@ -45,11 +43,6 @@ public class Materia {
         this.userDocId = userDocId;
         this.userId = userId;
     }
-
-    // --- Getters y Setters ---
-    // (Puedes generarlos automáticamente en Android Studio)
-    // (Asegúrate de poner @Exclude en los getters/setters de 'id' y 'userId' si los creas)
-
 
     @Exclude
     public int getUserId() {

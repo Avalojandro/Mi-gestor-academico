@@ -28,7 +28,7 @@ public interface MateriaDAO {
     @Query("DELETE FROM materias WHERE user_id = :userId")
     void eliminarPorUsuario(int userId);
 
-    // Query para obtener todas las materias de un usuario específico (usando el ID local de Room)
+    // Query para obtener todas las materias de un usuario especifico (usando el ID local de Room)
     @Query("SELECT * FROM materias WHERE user_id = :userId")
     List<Materia> obtenerPorUsuario(int userId);
 

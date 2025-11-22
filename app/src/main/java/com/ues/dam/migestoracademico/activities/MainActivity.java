@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
     private RecyclerView rvMaterias;
     private MateriaAdapter materiaAdapter;
     private FloatingActionButton fabAddMateria;
-    private FloatingActionButton fabMap; // ← botón del mapa
+    private FloatingActionButton fabMap; // boton del mapa
     private boolean isLoading = false;
 
     // Constantes para SharedPreferences
@@ -72,9 +72,8 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
         });
 
         // Agregar materia
-        fabAddMateria.setOnClickListener(v ->
-                startActivity(new Intent(MainActivity.this, AddEditMateriaActivity.class))
-        );
+        fabAddMateria
+                .setOnClickListener(v -> startActivity(new Intent(MainActivity.this, AddEditMateriaActivity.class)));
 
         // Abrir el mapa
         fabMap.setOnClickListener(v -> {
@@ -125,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
                     db.materiaDAO().eliminarPorUsuario(userRoomId);
 
                     // Set userRoomId for each materia before inserting
-                    for(Materia m : materiasDeFirestore) {
+                    for (Materia m : materiasDeFirestore) {
                         m.setUserId(userRoomId);
                     }
 
@@ -214,9 +213,7 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
 
             if (materia.firestoreId != null && !materia.firestoreId.isEmpty()) {
                 MateriaRepository.eliminar(materia.firestoreId)
-                        .addOnFailureListener(e ->
-                                Log.e("FirestoreDelete", "Error al borrar materia de Firestore", e)
-                        );
+                        .addOnFailureListener(e -> Log.e("FirestoreDelete", "Error al borrar materia de Firestore", e));
             }
 
             runOnUiThread(() -> {

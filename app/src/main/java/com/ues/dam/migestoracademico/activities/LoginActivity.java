@@ -93,19 +93,19 @@ public class LoginActivity extends AppCompatActivity {
         firebaseAuth.signInWithEmailAndPassword(email, contrasena)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Inicio de sesión exitoso en Firebase
+                        // inicio de sesion exitoso en Firebase
                         String docId = firebaseAuth.getCurrentUser().getUid();
                         Executors.newSingleThreadExecutor().execute(() -> {
                             Usuario usuarioEncontrado = db.usuarioDAO().buscarPorEmail(email);
 
                             if (usuarioEncontrado != null) {
-                                // Usuario encontrado en la base de datos local
+                                // usuario encontrado en la base de datos local
                                 Usuario finalUsuarioEncontrado = usuarioEncontrado;
                                 runOnUiThread(() -> {
                                     procederConInicioSesion(email, docId, finalUsuarioEncontrado.id);
                                 });
                             } else {
-                                // Usuario no encontrado en la base de datos local, buscar en Firestore
+                                // usuario no encontrado en la base de datos local, buscar en Firestore
                                 UsuarioRepository.getUser(docId).addOnCompleteListener(taskFirestore -> {
                                     if (taskFirestore.isSuccessful() && taskFirestore.getResult().exists()) {
                                         Usuario usuarioDeFirestore = taskFirestore.getResult().toObject(Usuario.class);
@@ -119,7 +119,8 @@ public class LoginActivity extends AppCompatActivity {
                                     } else {
                                         // Usuario no encontrado en Firestore, esto es un estado inconsistente
                                         runOnUiThread(() -> {
-                                            Toast.makeText(LoginActivity.this, "No se encontraron datos del usuario.", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(LoginActivity.this, "No se encontraron datos del usuario.",
+                                                    Toast.LENGTH_SHORT).show();
                                             firebaseAuth.signOut();
                                         });
                                     }
@@ -127,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         });
                     } else {
-                        // Si el inicio de sesión falla
+                        // Si el inicio de sesion falla
                         Toast.makeText(LoginActivity.this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT)
                                 .show();
                     }
@@ -158,7 +159,6 @@ public class LoginActivity extends AppCompatActivity {
     private void guardarPerfilDeUsuario(String email, String docId, int roomId) {
         SharedPreferences preferencias = getSharedPreferences(PREF_PERFIL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferencias.edit();
-        editor.putBoolean(CLAVE_SESION_ACTIVA, true);
         editor.putString(CLAVE_EMAIL, email);
         editor.putString(CLAVE_DOC_ID, docId);
         editor.putInt(CLAVE_ROOM_ID, roomId);

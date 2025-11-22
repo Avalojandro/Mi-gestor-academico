@@ -57,40 +57,37 @@ public class AddEditMateriaActivity extends AppCompatActivity {
         userDocId = prefs.getString(CLAVE_DOC_ID, null);
         userRoomId = prefs.getInt(CLAVE_ROOM_ID, -1);
 
-        // --- LÓGICA DE EDICIÓN ---
+        // --- LOGICA DE EDICION ---
         // Comprobar si recibimos un ID de materia
         materiaId = getIntent().getIntExtra("MATERIA_ID", -1);
 
         if (materiaId != -1) {
             isEditMode = true;
-            // Estamos en Modo Edición
+            // Estamos en Modo Edicion
             tvTituloForm.setText("Editar Materia");
             btnGuardarMateria.setText("Actualizar Cambios");
             loadMateriaData(materiaId);
         } else {
-            // Estamos en Modo Creación (como estaba antes)
+            // Estamos en Modo Creacion (como estaba antes)
             isEditMode = false;
             tvTituloForm.setText("Nueva Materia");
             btnGuardarMateria.setText("Guardar Materia");
         }
-        // --- FIN LÓGICA DE EDICIÓN ---
+        // --- FIN LGICA DE EDICIoN ---
 
         btnGuardarMateria.setOnClickListener(v -> guardarMateria());
     }
 
     private void loadMateriaData(int id) {
         Executors.newSingleThreadExecutor().execute(() -> {
-            // 1. Obtener la materia de la BD local
             materiaActual = db.materiaDAO().obtenerPorId(id);
 
-            // 2. Poblar los campos en el hilo principal
             runOnUiThread(() -> {
                 if (materiaActual != null) {
                     etMateriaNombre.setText(materiaActual.nombre);
                     etMateriaCodigo.setText(materiaActual.codigo);
                     etMateriaUV.setText(String.format(Locale.getDefault(), "%d", materiaActual.uv));
                 } else {
-                    // Error: No se encontró la materia
                     Toast.makeText(this, "Error al cargar la materia", Toast.LENGTH_SHORT).show();
                     finish();
                 }
@@ -99,7 +96,6 @@ public class AddEditMateriaActivity extends AppCompatActivity {
     }
 
     private void guardarMateria() {
-        // --- Validación (igual que antes) ---
         String nombre = etMateriaNombre.getText().toString().trim();
         String codigo = etMateriaCodigo.getText().toString().trim();
         String uvString = etMateriaUV.getText().toString().trim();
@@ -117,9 +113,9 @@ public class AddEditMateriaActivity extends AppCompatActivity {
             return;
         }
 
-        // --- LÓGICA DE GUARDADO/ACTUALIZACIÓN ---
+        // --- LGICA DE GUARDADO/ACTUALIZACIoN ---
         if (isEditMode) {
-            // --- MODO EDICIÓN: ACTUALIZAR ---
+            // --- MODO EDICION: ACTUALIZAR ---
             // 1. Actualizar el objeto 'materiaActual'
             materiaActual.nombre = nombre;
             materiaActual.codigo = codigo;
@@ -132,8 +128,12 @@ public class AddEditMateriaActivity extends AppCompatActivity {
                 // 3. Actualizar en Firestore
                 if (materiaActual.firestoreId != null) {
                     MateriaRepository.actualizar(materiaActual.firestoreId, materiaActual)
-                            .addOnFailureListener(e ->
-                                    runOnUiThread(() -> Toast.makeText(AddEditMateriaActivity.this, "Error al actualizar en Firestore", Toast.LENGTH_SHORT).show()));
+                            .addOnFailureListener(
+                                    e -> runOnUiThread(
+                                            () -> Toast
+                                                    .makeText(AddEditMateriaActivity.this,
+                                                            "Error al actualizar en Firestore", Toast.LENGTH_SHORT)
+                                                    .show()));
                 }
 
                 // 4. Finalizar
@@ -144,34 +144,36 @@ public class AddEditMateriaActivity extends AppCompatActivity {
             });
 
         } else {
-            // --- MODO CREACIÓN: (Tu lógica anterior) ---
+            // --- MODO CREACION: (Tu logica anterior) ---
             if (userDocId == null || userRoomId == -1) {
                 Toast.makeText(this, "Error de sesión de usuario", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // 1. Crear el objeto Materia
+            // objeto Materia
             Materia nuevaMateria = new Materia(nombre, codigo, uv, null, userDocId, userRoomId);
 
-            // 2. Guardar en Firestore PRIMERO
+            // gardar en Firestore primer\o
             MateriaRepository.crear(nuevaMateria)
                     .addOnSuccessListener(documentReference -> {
                         String firestoreId = documentReference.getId();
                         nuevaMateria.firestoreId = firestoreId;
 
-                        // 4. Guardar en Room
+                        // guardar en Room
                         Executors.newSingleThreadExecutor().execute(() -> {
                             db.materiaDAO().crear(nuevaMateria);
 
-                            // 5. Volver
+                            // volver
                             runOnUiThread(() -> {
-                                Toast.makeText(AddEditMateriaActivity.this, "Materia guardada", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AddEditMateriaActivity.this, "Materia guardada", Toast.LENGTH_SHORT)
+                                        .show();
                                 finish();
                             });
                         });
                     })
                     .addOnFailureListener(e -> {
-                        runOnUiThread(() -> Toast.makeText(AddEditMateriaActivity.this, "Error al guardar en Firestore", Toast.LENGTH_SHORT).show());
+                        runOnUiThread(() -> Toast.makeText(AddEditMateriaActivity.this, "Error al guardar en Firestore",
+                                Toast.LENGTH_SHORT).show());
                     });
         }
     }
