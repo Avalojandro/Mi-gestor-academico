@@ -25,7 +25,6 @@ public class SplashActivity extends AppCompatActivity {
         // Habilitar la persistencia de Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
                 .build();
         db.setFirestoreSettings(settings);
 
