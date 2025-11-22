@@ -115,15 +115,23 @@ public class RegisterActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Registro exitoso en Firebase, ahora guarda en Room
+                        String uid = firebaseAuth.getCurrentUser().getUid();
                         Executors.newSingleThreadExecutor().execute(() -> {
                             try {
-                                Usuario nuevoUsuario = new Usuario(email, name); // Contraseña vacía
+                                Usuario nuevoUsuario = new Usuario(email, name);
                                 db.usuarioDAO().crear(nuevoUsuario);
 
-                                runOnUiThread(() -> {
-                                    Toast.makeText(RegisterActivity.this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                                    finish();
+                                UsuarioRepository.updateUser(uid, nuevoUsuario).addOnCompleteListener(saveTask -> {
+                                    if (saveTask.isSuccessful()) {
+                                        runOnUiThread(() -> {
+                                            Toast.makeText(RegisterActivity.this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                            finish();
+                                        });
+                                    } else {
+                                        runOnUiThread(() ->
+                                                Toast.makeText(RegisterActivity.this, "Error al guardar usuario en la nube", Toast.LENGTH_SHORT).show());
+                                    }
                                 });
 
                             } catch (Exception e) {

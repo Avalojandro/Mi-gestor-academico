@@ -20,14 +20,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.ues.dam.migestoracademico.R;
 import com.ues.dam.migestoracademico.data.AppDB;
 import com.ues.dam.migestoracademico.entities.Usuario;
 import com.ues.dam.migestoracademico.repositories.UsuarioRepository;
 
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -83,7 +81,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-
     private void iniciarSesion() {
         String email = etEmail.getText().toString().trim();
         String contrasena = etContrasena.getText().toString().trim();
@@ -97,33 +94,56 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Inicio de sesión exitoso en Firebase
+                        String docId = firebaseAuth.getCurrentUser().getUid();
                         Executors.newSingleThreadExecutor().execute(() -> {
                             Usuario usuarioEncontrado = db.usuarioDAO().buscarPorEmail(email);
-                            String docId = firebaseAuth.getCurrentUser().getUid();
 
-                            runOnUiThread(() -> {
-                                if (usuarioEncontrado != null) {
-                                    guardarPerfilDeUsuario(email, docId, usuarioEncontrado.id);
-                                    if (cbGuardarSesion.isChecked()) {
-                                        guardarSesionActiva(email, docId);
+                            if (usuarioEncontrado != null) {
+                                // Usuario encontrado en la base de datos local
+                                Usuario finalUsuarioEncontrado = usuarioEncontrado;
+                                runOnUiThread(() -> {
+                                    procederConInicioSesion(email, docId, finalUsuarioEncontrado.id);
+                                });
+                            } else {
+                                // Usuario no encontrado en la base de datos local, buscar en Firestore
+                                UsuarioRepository.getUser(docId).addOnCompleteListener(taskFirestore -> {
+                                    if (taskFirestore.isSuccessful() && taskFirestore.getResult().exists()) {
+                                        Usuario usuarioDeFirestore = taskFirestore.getResult().toObject(Usuario.class);
+                                        Executors.newSingleThreadExecutor().execute(() -> {
+                                            db.usuarioDAO().crear(usuarioDeFirestore);
+                                            Usuario usuarioFinal = db.usuarioDAO().buscarPorEmail(email);
+                                            runOnUiThread(() -> {
+                                                procederConInicioSesion(email, docId, usuarioFinal.id);
+                                            });
+                                        });
                                     } else {
-                                        Toast.makeText(this, "No se va a guardar la sesión", Toast.LENGTH_SHORT).show();
+                                        // Usuario no encontrado en Firestore, esto es un estado inconsistente
+                                        runOnUiThread(() -> {
+                                            Toast.makeText(LoginActivity.this, "No se encontraron datos del usuario.", Toast.LENGTH_SHORT).show();
+                                            firebaseAuth.signOut();
+                                        });
                                     }
-
-                                    Intent intent = new Intent(LoginActivity.this, SplashActivityAccess.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    // Esto no debería pasar si el registro es correcto
-                                    Toast.makeText(LoginActivity.this, "Usuario no encontrado en la base de datos local", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                                });
+                            }
                         });
                     } else {
                         // Si el inicio de sesión falla
-                        Toast.makeText(LoginActivity.this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT)
+                                .show();
                     }
                 });
+
+    }
+
+    private void procederConInicioSesion(String email, String docId, int roomId) {
+        guardarPerfilDeUsuario(email, docId, roomId);
+        if (cbGuardarSesion.isChecked()) {
+            guardarSesionActiva(email, docId);
+        }
+
+        Intent intent = new Intent(LoginActivity.this, SplashActivityAccess.class);
+        startActivity(intent);
+        finish();
     }
 
     private void guardarSesionActiva(String email, String docId) {
