@@ -21,16 +21,12 @@ public class Usuario {
     @ColumnInfo(name = "name")
     public String name;
 
-    @ColumnInfo(name = "password")
-    public String password;
-
     public Usuario() {
     }
 
-    public Usuario(String email, String password, String name) {
+    public Usuario(String email, String name) {
         this.email = email;
         this.name = name;
-        this.password = password;
     }
 
 
@@ -45,9 +41,5 @@ public class Usuario {
 
     public String getName() {
         return name;
-    }
-
-    public String getPassword() {
-        return password;
     }
 }

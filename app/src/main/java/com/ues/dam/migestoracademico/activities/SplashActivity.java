@@ -7,6 +7,7 @@ import android.os.Handler;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.ues.dam.migestoracademico.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -20,8 +21,8 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         new Handler().postDelayed(() -> {
-
-            if (LoginActivity.sesionActiva(this)) {
+            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+            if (firebaseAuth.getCurrentUser() != null) {
                 // Usuario ya está logueado, ir al dashboard
                 startActivity(new Intent(this, SplashActivityAccess.class));
             } else {

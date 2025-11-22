@@ -16,6 +16,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.ues.dam.migestoracademico.R;
 import com.ues.dam.migestoracademico.data.AppDB;
 import com.ues.dam.migestoracademico.entities.Usuario;
@@ -29,6 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegistrarse, btnIniciarSesion;
     private AppDB db;
     private boolean isPasswordVisible = false;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,7 @@ public class RegisterActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         btnRegistrarse = findViewById(R.id.btnRegistrarse);
         btnIniciarSesion = findViewById(R.id.btnAcceder);
+        firebaseAuth = FirebaseAuth.getInstance();
 
         ImageView togglePasswordVisibilityImageView = findViewById(R.id.togglePasswordVisibilityImageView);
         db = AppDB.getInstance(this);
@@ -108,36 +111,37 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         // Formatos validos, siguiente paso
-        Executors.newSingleThreadExecutor().execute(() -> {
-            try {
-                int existe = db.usuarioDAO().existeUsuario(email);
+        firebaseAuth.createUserWithEmailAndPassword(email, contrasena)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Registro exitoso en Firebase, ahora guarda en Room
+                        Executors.newSingleThreadExecutor().execute(() -> {
+                            try {
+                                Usuario nuevoUsuario = new Usuario(email, name); // Contraseña vacía
+                                db.usuarioDAO().crear(nuevoUsuario);
 
-                if (existe > 0) {
-                    runOnUiThread(() ->
-                            Toast.makeText(RegisterActivity.this, "El email ya existe", Toast.LENGTH_SHORT).show());
-                    return;
-                }
+                                runOnUiThread(() -> {
+                                    Toast.makeText(RegisterActivity.this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                    finish();
+                                });
 
-                Usuario nuevoUsuario = new Usuario(email, contrasena, name);
-                UsuarioRepository.saveUser(new Usuario(email, contrasena, name));
-                db.usuarioDAO().crear(nuevoUsuario);
-
-                runOnUiThread(() -> {
-                    Toast.makeText(RegisterActivity.this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                    finish();
+                            } catch (Exception e) {
+                                runOnUiThread(() ->
+                                        Toast.makeText(RegisterActivity.this, "Error al guardar usuario en la base de datos local", Toast.LENGTH_SHORT).show());
+                            }
+                        });
+                    } else {
+                        // Si el registro falla, muestra un mensaje al usuario.
+                        Toast.makeText(RegisterActivity.this, "Error al registrar: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 });
-
-            } catch (Exception e) {
-                runOnUiThread(() ->
-                        Toast.makeText(RegisterActivity.this, "Error al registrar email", Toast.LENGTH_SHORT).show());
-            }
-        });
     }
 
     private boolean isValidEmail(String email) {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
+
 
     private boolean isValidPassword(String pwd) {
         return pwd.length() >= 8 && pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$");

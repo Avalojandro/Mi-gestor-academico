@@ -19,6 +19,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ues.dam.migestoracademico.R;
 import com.ues.dam.migestoracademico.data.AppDB;
@@ -35,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private AppDB db;
     private CheckBox cbGuardarSesion;
     private boolean isPasswordVisible = false;
+    private FirebaseAuth firebaseAuth;
 
     private static final String PREF_SESION = "SesionApp";
     private static final String PREF_PERFIL = "perfil";
@@ -60,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         btnAcceder = findViewById(R.id.btnAcceder);
         btnRegistrarse = findViewById(R.id.btnRegistrarse);
         cbGuardarSesion = findViewById(R.id.guardarSesion);
+        firebaseAuth = FirebaseAuth.getInstance();
 
         ImageView togglePasswordVisibilityImageView = findViewById(R.id.togglePasswordVisibilityImageView);
         db = AppDB.getInstance(this);
@@ -90,60 +93,37 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            try {
-                Usuario usuarioEncontrado = db.usuarioDAO().login(email, contrasena);
-                AtomicReference<Usuario> usr = new AtomicReference<>();
+        firebaseAuth.signInWithEmailAndPassword(email, contrasena)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Inicio de sesión exitoso en Firebase
+                        Executors.newSingleThreadExecutor().execute(() -> {
+                            Usuario usuarioEncontrado = db.usuarioDAO().buscarPorEmail(email);
+                            String docId = firebaseAuth.getCurrentUser().getUid();
 
-                AtomicReference<String> docId = new AtomicReference<>();
-//--------------------------------------------------------
-                UsuarioRepository.getUserByEmail(email)
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-
-                                QuerySnapshot snapshot = task.getResult();
-
-                                Usuario usuarioEncontradoFirestore = null;
-                                String documentId = null;
-
-                                if (snapshot != null && !snapshot.isEmpty() ) {
-                                    usuarioEncontradoFirestore = snapshot.getDocuments().get(0).toObject(Usuario.class);
-                                    //agregado obtener el id del usauario 
-                                    documentId = snapshot.getDocuments().get(0).getId();
-                                    usr.set(usuarioEncontradoFirestore);
-                                    docId.set(documentId);
-                                }
-                            } else {
-                                Log.e("ERROR", "Error al buscar usuario", task.getException());
-                            }
-                           //--
                             runOnUiThread(() -> {
-                                if (usuarioEncontrado != null && usr.get() != null && docId.get() != null) {
-                                    guardarPerfilDeUsuario(email, docId.get(), usuarioEncontrado.id);
-                                    if (cbGuardarSesion.isChecked()){
-                                        guardarSesionActiva(email, docId.get());
-                                    }else {
+                                if (usuarioEncontrado != null) {
+                                    guardarPerfilDeUsuario(email, docId, usuarioEncontrado.id);
+                                    if (cbGuardarSesion.isChecked()) {
+                                        guardarSesionActiva(email, docId);
+                                    } else {
                                         Toast.makeText(this, "No se va a guardar la sesión", Toast.LENGTH_SHORT).show();
-
                                     }
-
 
                                     Intent intent = new Intent(LoginActivity.this, SplashActivityAccess.class);
                                     startActivity(intent);
                                     finish();
                                 } else {
-                                    Toast.makeText(LoginActivity.this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                                    // Esto no debería pasar si el registro es correcto
+                                    Toast.makeText(LoginActivity.this, "Usuario no encontrado en la base de datos local", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         });
-                //-------------------------
-
-
-            } catch (Exception e) {
-                runOnUiThread(() ->
-                        Toast.makeText(LoginActivity.this, "Error en el inicio de sesión", Toast.LENGTH_SHORT).show());
-            }
-        });
+                    } else {
+                        // Si el inicio de sesión falla
+                        Toast.makeText(LoginActivity.this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void guardarSesionActiva(String email, String docId) {
