@@ -36,11 +36,13 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
     private MateriaAdapter materiaAdapter;
     private FloatingActionButton fabAddMateria;
     private FloatingActionButton fabMap; // ← botón del mapa
+    private boolean isLoading = false;
 
     // Constantes para SharedPreferences
     private static final String PREF_PERFIL = "perfil";
     private static final String CLAVE_EMAIL = "emailUsuario";
     private static final String CLAVE_ROOM_ID = "roomUsuarioId";
+    private static final String CLAVE_DOC_ID = "docIdUsuario";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,18 +94,63 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
     }
 
     private void loadMaterias() {
+        if (isLoading) {
+            return; // Si ya está cargando, no hacer nada
+        }
+        isLoading = true; // Marcar como cargando
+
         SharedPreferences prefs = getSharedPreferences(PREF_PERFIL, Context.MODE_PRIVATE);
+        String userDocId = prefs.getString(CLAVE_DOC_ID, null);
         int userRoomId = prefs.getInt(CLAVE_ROOM_ID, -1);
 
-        if (userRoomId == -1) {
+        if (userDocId == null || userRoomId == -1) {
             Toast.makeText(this, "Error al identificar al usuario", Toast.LENGTH_SHORT).show();
+            isLoading = false; // Resetear el flag
             return;
         }
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            List<Materia> materias = db.materiaDAO().obtenerPorUsuario(userRoomId);
+        // Fetch from Firestore
+        MateriaRepository.obtenerPorUsuario(userDocId).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Materia> materiasDeFirestore = task.getResult().toObjects(Materia.class);
 
-            runOnUiThread(() -> materiaAdapter.setMaterias(materias));
+                // Asignar el ID de documento de Firestore a cada materia
+                for (int i = 0; i < task.getResult().getDocuments().size(); i++) {
+                    materiasDeFirestore.get(i).setFirestoreId(task.getResult().getDocuments().get(i).getId());
+                }
+
+                // Save to local DB in background
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    // Clear old data
+                    db.materiaDAO().eliminarPorUsuario(userRoomId);
+
+                    // Set userRoomId for each materia before inserting
+                    for(Materia m : materiasDeFirestore) {
+                        m.setUserId(userRoomId);
+                    }
+
+                    // Insert new data
+                    db.materiaDAO().crearTodas(materiasDeFirestore);
+
+                    // Load from local DB to update UI
+                    List<Materia> materiasLocales = db.materiaDAO().obtenerPorUsuario(userRoomId);
+                    runOnUiThread(() -> {
+                        materiaAdapter.setMaterias(materiasLocales);
+                        isLoading = false; // Marcar como finalizado
+                    });
+                });
+            } else {
+                // On failure, maybe load from cache or show error
+                Log.e("MainActivity", "Error fetching materias from Firestore", task.getException());
+                // Try to load from local DB as a fallback
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    List<Materia> materias = db.materiaDAO().obtenerPorUsuario(userRoomId);
+                    runOnUiThread(() -> {
+                        materiaAdapter.setMaterias(materias);
+                        isLoading = false; // Marcar como finalizado
+                    });
+                });
+            }
         });
     }
 

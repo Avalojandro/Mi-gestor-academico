@@ -16,11 +16,17 @@ public interface MateriaDAO {
     @Insert
     void crear(Materia materia);
 
+    @Insert
+    void crearTodas(List<Materia> materias);
+
     @Update
     void actualizar(Materia materia);
 
     @Delete
     void eliminar(Materia materia);
+
+    @Query("DELETE FROM materias WHERE user_id = :userId")
+    void eliminarPorUsuario(int userId);
 
     // Query para obtener todas las materias de un usuario específico (usando el ID local de Room)
     @Query("SELECT * FROM materias WHERE user_id = :userId")
