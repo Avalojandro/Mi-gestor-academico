@@ -8,6 +8,8 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.ues.dam.migestoracademico.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -19,6 +21,16 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_splash);
+
+        // Habilitar la persistencia de Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
+
+        // Forzar el intento de reconexión y sincronización
+        db.enableNetwork();
 
         new Handler().postDelayed(() -> {
             FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
