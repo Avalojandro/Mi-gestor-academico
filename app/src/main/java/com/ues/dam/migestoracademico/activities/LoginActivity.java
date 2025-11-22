@@ -183,6 +183,5 @@ public class LoginActivity extends AppCompatActivity {
 
     private void irARegistro() {
         startActivity(new Intent(this, RegisterActivity.class));
-        finish();
     }
 }
