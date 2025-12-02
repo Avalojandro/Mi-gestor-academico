@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/steel_blue"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTituloHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="Nueva Actividad"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etNombreActividad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre (ej. Examen Parcial I)"
+            android:inputType="textCapSentences"
+            android:minHeight="48dp" />
+
+        <EditText
+            android:id="@+id/etDescripcionActividad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Descripción o temas"
+            android:inputType="textMultiLine"
+            android:minHeight="48dp" />
+
+        <EditText
+            android:id="@+id/etFechaActividad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Fecha (ej. 12/10/2025)"
+            android:inputType="date"
+            android:minHeight="48dp" />
+
+        <EditText
+            android:id="@+id/etPorcentajeActividad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Porcentaje (ej. 20)"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <Button
+            android:id="@+id/btnGuardarActividad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:backgroundTint="@color/navy_blue"
+            android:text="Guardar Actividad"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+</ScrollView>

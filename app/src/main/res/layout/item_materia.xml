@@ -7,11 +7,24 @@
     android:layout_marginHorizontal="8dp"
     android:layout_marginTop="8dp"
     android:layout_marginBottom="16dp"
-    android:background="@drawable/rounded"
-    android:orientation="vertical"
-    android:padding="18dp">
+    android:background="@drawable/card"
+    android:backgroundTint="#FFFFFF"
+    android:orientation="horizontal"  android:padding="18dp">
+
+    <ImageView
+        android:id="@+id/ivIconoMateria"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/book"
+        app:tint="@color/navy_blue" />
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1" > <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -19,7 +32,7 @@
 
         <TextView
             android:id="@+id/tvMateriaNombre"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="@color/black"
@@ -28,42 +41,52 @@
             tools:text="Programación de Dispositivos Móviles" />
 
         <ImageButton
+            android:id="@+id/btnEditMateria"
+            android:layout_width="25dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/square_icon_24dp"
+            app:tint="@color/black" />
+
+        <ImageButton
             android:id="@+id/btnDeleteMateria"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="25dp"
+            android:layout_height="20dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/baseline_delete_24"
             app:tint="#EB1A1A" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tvMateriaCodigo"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="1dp"
-            android:textColor="@color/navy_blue"
-            android:textSize="16sp"
-            tools:text="PDM123" />
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            <TextView
+                android:id="@+id/tvMateriaCodigo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="1dp"
+                android:textColor="@color/navy_blue"
+                android:textSize="16sp"
+                tools:text="PDM123" />
 
-        <TextView
-            android:id="@+id/tvMateriaUV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/midnight_blue"
-            android:textSize="16sp"
-            android:textStyle="bold|italic"
-            tools:text="4 UV" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvMateriaUV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/midnight_blue"
+                android:textSize="16sp"
+                android:textStyle="bold|italic"
+                tools:text="4 UV" />
+        </LinearLayout>
     </LinearLayout>
-
 </LinearLayout>

@@ -35,12 +35,11 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
     private RecyclerView rvMaterias;
     private MateriaAdapter materiaAdapter;
     private FloatingActionButton fabAddMateria;
-    private FloatingActionButton fabMap; // boton del mapa
+    private FloatingActionButton fabMap;
     private boolean isLoading = false;
 
     // Constantes para SharedPreferences
     private static final String PREF_PERFIL = "perfil";
-    private static final String CLAVE_EMAIL = "emailUsuario";
     private static final String CLAVE_ROOM_ID = "roomUsuarioId";
     private static final String CLAVE_DOC_ID = "docIdUsuario";
 
@@ -61,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
 
         // Configurar RecyclerView
         rvMaterias.setLayoutManager(new LinearLayoutManager(this));
+        // Pasamos 'this' porque MainActivity implementa la interfaz OnMateriaListener
         materiaAdapter = new MateriaAdapter(this);
         rvMaterias.setAdapter(materiaAdapter);
 
@@ -72,8 +72,7 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
         });
 
         // Agregar materia
-        fabAddMateria
-                .setOnClickListener(v -> startActivity(new Intent(MainActivity.this, AddEditMateriaActivity.class)));
+        fabAddMateria.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, AddEditMateriaActivity.class)));
 
         // Abrir el mapa
         fabMap.setOnClickListener(v -> {
@@ -88,15 +87,12 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
     @Override
     protected void onResume() {
         super.onResume();
-        // Recargar materias al volver al home
         loadMaterias();
     }
 
     private void loadMaterias() {
-        if (isLoading) {
-            return; // Si ya está cargando, no hacer nada
-        }
-        isLoading = true; // Marcar como cargando
+        if (isLoading) return;
+        isLoading = true;
 
         SharedPreferences prefs = getSharedPreferences(PREF_PERFIL, Context.MODE_PRIVATE);
         String userDocId = prefs.getString(CLAVE_DOC_ID, null);
@@ -104,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
 
         if (userDocId == null || userRoomId == -1) {
             Toast.makeText(this, "Error al identificar al usuario", Toast.LENGTH_SHORT).show();
-            isLoading = false; // Resetear el flag
+            isLoading = false;
             return;
         }
 
@@ -113,40 +109,32 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
             if (task.isSuccessful()) {
                 List<Materia> materiasDeFirestore = task.getResult().toObjects(Materia.class);
 
-                // Asignar el ID de documento de Firestore a cada materia
                 for (int i = 0; i < task.getResult().getDocuments().size(); i++) {
                     materiasDeFirestore.get(i).setFirestoreId(task.getResult().getDocuments().get(i).getId());
                 }
 
-                // Save to local DB in background
                 Executors.newSingleThreadExecutor().execute(() -> {
-                    // Clear old data
                     db.materiaDAO().eliminarPorUsuario(userRoomId);
 
-                    // Set userRoomId for each materia before inserting
                     for (Materia m : materiasDeFirestore) {
                         m.setUserId(userRoomId);
                     }
 
-                    // Insert new data
                     db.materiaDAO().crearTodas(materiasDeFirestore);
 
-                    // Load from local DB to update UI
                     List<Materia> materiasLocales = db.materiaDAO().obtenerPorUsuario(userRoomId);
                     runOnUiThread(() -> {
                         materiaAdapter.setMaterias(materiasLocales);
-                        isLoading = false; // Marcar como finalizado
+                        isLoading = false;
                     });
                 });
             } else {
-                // On failure, maybe load from cache or show error
                 Log.e("MainActivity", "Error fetching materias from Firestore", task.getException());
-                // Try to load from local DB as a fallback
                 Executors.newSingleThreadExecutor().execute(() -> {
                     List<Materia> materias = db.materiaDAO().obtenerPorUsuario(userRoomId);
                     runOnUiThread(() -> {
                         materiaAdapter.setMaterias(materias);
-                        isLoading = false; // Marcar como finalizado
+                        isLoading = false;
                     });
                 });
             }
@@ -173,12 +161,39 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
         return super.onOptionsItemSelected(item);
     }
 
+    // --- IMPLEMENTACIÓN DE INTERFAZ OnMateriaListener ---
+
+    // 1. EDITAR (Click en botón lápiz)
     @Override
     public void onEditClick(Materia materia) {
         Intent intent = new Intent(MainActivity.this, AddEditMateriaActivity.class);
         intent.putExtra("MATERIA_ID", materia.id);
         startActivity(intent);
     }
+
+    // 2. CLICK EN TARJETA (Click en el fondo -> Ver Actividades) - NUEVO
+    @Override
+    public void onMateriaClick(Materia materia) {
+        Intent intent = new Intent(MainActivity.this, ActividadesActivity.class);
+        intent.putExtra("MATERIA_ID", materia.id);
+        intent.putExtra("MATERIA_NOMBRE", materia.nombre);
+        intent.putExtra("MATERIA_FS_ID", materia.firestoreId);
+        startActivity(intent);
+    }
+
+    // 3. BORRAR (Click en botón basura)
+    @Override
+    public void onDeleteClick(Materia materia, int position) {
+        new AlertDialog.Builder(this)
+                .setTitle("Confirmar Borrado")
+                .setMessage("¿Estás seguro de que quieres eliminar la materia '" + materia.nombre + "'?")
+                .setPositiveButton("Sí, Eliminar", (dialog, which) -> borrarMateria(materia, position))
+                .setNegativeButton("Cancelar", null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    // ----------------------------------------------------
 
     private void cerrarSesion() {
         new AlertDialog.Builder(this)
@@ -193,17 +208,6 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
                     finish();
                 })
                 .setNegativeButton("Cancelar", null)
-                .show();
-    }
-
-    @Override
-    public void onDeleteClick(Materia materia, int position) {
-        new AlertDialog.Builder(this)
-                .setTitle("Confirmar Borrado")
-                .setMessage("¿Estás seguro de que quieres eliminar la materia '" + materia.nombre + "'?")
-                .setPositiveButton("Sí, Eliminar", (dialog, which) -> borrarMateria(materia, position))
-                .setNegativeButton("Cancelar", null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
     }
 

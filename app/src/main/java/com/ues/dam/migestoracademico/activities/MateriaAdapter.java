@@ -3,7 +3,7 @@ package com.ues.dam.migestoracademico.activities;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton; // IMPORTAR
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,17 +16,15 @@ import java.util.Locale;
 public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaViewHolder> {
 
     private List<Materia> materias = new ArrayList<>();
-
-    // --- AÑADIR LISTENER ---
     private final OnMateriaListener listener;
 
-    // --- INTERFAZ PARA EL LISTENER ---
+    // --- INTERFAZ ACTUALIZADA ---
     public interface OnMateriaListener {
-        void onDeleteClick(Materia materia, int position);
-        void onEditClick(Materia materia);
+        void onDeleteClick(Materia materia, int position); // Click en borrar
+        void onEditClick(Materia materia);                 // Click en editar (lápiz)
+        void onMateriaClick(Materia materia);              // Click en la tarjeta (ver actividades)
     }
 
-    // --- MODIFICAR CONSTRUCTOR ---
     public MateriaAdapter(OnMateriaListener listener) {
         this.listener = listener;
     }
@@ -45,6 +43,8 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
         holder.tvNombre.setText(materia.nombre);
         holder.tvCodigo.setText(materia.codigo);
         holder.tvUV.setText(String.format(Locale.getDefault(), "%d UV", materia.uv));
+
+        // El binding de los listeners se maneja en el ViewHolder
     }
 
     @Override
@@ -57,31 +57,33 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
         notifyDataSetChanged();
     }
 
-    // --- AÑADIR MÉTODO PARA QUITAR ITEM ---
     public void removerMateria(int position) {
         materias.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, materias.size()); // Actualiza las posiciones
+        notifyItemRangeChanged(position, materias.size());
     }
 
-    // --- AÑADIR MÉTODO PARA OBTENER ITEM ---
     public Materia getMateriaAt(int position) {
         return materias.get(position);
     }
 
-    // --- MODIFICAR VIEWHOLDER ---
+    // --- VIEWHOLDER COMPLETO ---
     class MateriaViewHolder extends RecyclerView.ViewHolder {
         TextView tvNombre, tvCodigo, tvUV;
-        ImageButton btnDeleteMateria; // AÑADIR
+        ImageButton btnDeleteMateria;
+        ImageButton btnEditMateria; // Referencia al nuevo botón
 
         public MateriaViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombre = itemView.findViewById(R.id.tvMateriaNombre);
             tvCodigo = itemView.findViewById(R.id.tvMateriaCodigo);
             tvUV = itemView.findViewById(R.id.tvMateriaUV);
-            btnDeleteMateria = itemView.findViewById(R.id.btnDeleteMateria); // AÑADIR
 
-            // --- AÑADIR ONCLICK LISTENER PARA BORRAR ---
+            // Botones
+            btnDeleteMateria = itemView.findViewById(R.id.btnDeleteMateria);
+            btnEditMateria = itemView.findViewById(R.id.btnEditMateria); // Asegúrate que este ID exista en tu XML
+
+            // 1. CLICK EN BORRAR (Basurero)
             btnDeleteMateria.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
@@ -89,10 +91,19 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
                 }
             });
 
-            itemView.setOnClickListener(v -> {
+            // 2. CLICK EN EDITAR (Lápiz) -> Abre AddEditMateriaActivity
+            btnEditMateria.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
                     listener.onEditClick(materias.get(position));
+                }
+            });
+
+            // 3. CLICK EN LA TARJETA (Fondo) -> Abre ActividadesActivity
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onMateriaClick(materias.get(position));
                 }
             });
         }

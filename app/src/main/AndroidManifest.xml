@@ -62,6 +62,16 @@
              android:name=".activities.EditProfileActivity"
              android:exported="false" />
 
+        <activity
+            android:name=".activities.ActividadesActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
+
+        <activity
+            android:name=".activities.AddEditActividadActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.ActividadesActivity" />
+
         <!-- Mapa -->
 
         <meta-data
