@@ -47,6 +47,15 @@
             android:minHeight="48dp" />
 
         <EditText
+            android:id="@+id/etNotaActividad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Nota Obtenida (ej. 8.5)"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <EditText
             android:id="@+id/etPorcentajeActividad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

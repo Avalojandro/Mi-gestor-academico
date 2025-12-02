@@ -80,13 +80,16 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/tvMateriaUV"
+                android:id="@+id/tvMateriaPromedio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/midnight_blue"
-                android:textSize="16sp"
-                android:textStyle="bold|italic"
-                tools:text="4 UV" />
+                android:background="@drawable/bg_badge"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="8.5" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

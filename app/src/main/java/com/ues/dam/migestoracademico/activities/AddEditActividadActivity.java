@@ -17,16 +17,15 @@ import java.util.concurrent.Executors;
 
 public class AddEditActividadActivity extends AppCompatActivity {
 
-    private EditText etNombre, etDescripcion, etFecha, etPorcentaje;
+    // 1. Agregamos etNota
+    private EditText etNombre, etDescripcion, etFecha, etPorcentaje, etNota;
     private Button btnGuardar;
-    private TextView tvTitulo; // Para cambiar el título "Nueva Actividad" a "Editar Actividad"
+    private TextView tvTitulo;
 
     private AppDB db;
 
     private int materiaId;
     private String materiaFirestoreId;
-
-    // Variable para saber si estamos editando
     private Actividad actividadEditar;
 
     @Override
@@ -36,35 +35,36 @@ public class AddEditActividadActivity extends AppCompatActivity {
 
         db = AppDB.getInstance(this);
 
-        // Vincular vistas
-        tvTitulo = findViewById(R.id.tvTituloHeader); // Asegúrate de agregar ID al TextView del título en el XML si quieres cambiarlo, o usa findViewByClass
-        // Si no tienes ID en el título, ignora la línea de arriba o agrégale: android:id="@+id/tvTituloHeader" al XML
-
+        tvTitulo = findViewById(R.id.tvTituloHeader);
         etNombre = findViewById(R.id.etNombreActividad);
         etDescripcion = findViewById(R.id.etDescripcionActividad);
         etFecha = findViewById(R.id.etFechaActividad);
         etPorcentaje = findViewById(R.id.etPorcentajeActividad);
+        // 2. Vincular vista nueva
+        etNota = findViewById(R.id.etNotaActividad);
+
         btnGuardar = findViewById(R.id.btnGuardarActividad);
 
-        // 1. Obtener datos de la Materia (Contexto)
         if (getIntent().hasExtra("MATERIA_ID")) {
             materiaId = getIntent().getIntExtra("MATERIA_ID", -1);
             materiaFirestoreId = getIntent().getStringExtra("MATERIA_FS_ID");
         }
 
-        // 2. VERIFICAR SI ESTAMOS EN MODO EDICIÓN
+        // MODO EDICIÓN
         if (getIntent().hasExtra("ACTIVIDAD_OBJ")) {
-            // Recuperamos el objeto
             actividadEditar = (Actividad) getIntent().getSerializableExtra("ACTIVIDAD_OBJ");
 
-            // Llenamos los campos
             if (actividadEditar != null) {
+                if (tvTitulo != null) tvTitulo.setText("Editar Actividad");
+
                 etNombre.setText(actividadEditar.nombre);
                 etDescripcion.setText(actividadEditar.descripcion);
                 etFecha.setText(actividadEditar.fecha);
                 etPorcentaje.setText(String.valueOf(actividadEditar.porcentaje));
 
-                // Cambiamos el texto del botón
+                // 3. Llenar la nota (Solo si es mayor a 0 para no mostrar 0.0 siempre)
+                etNota.setText(String.valueOf(actividadEditar.nota));
+
                 btnGuardar.setText("Actualizar Actividad");
             }
         }
@@ -77,6 +77,7 @@ public class AddEditActividadActivity extends AppCompatActivity {
         String descripcion = etDescripcion.getText().toString().trim();
         String fecha = etFecha.getText().toString().trim();
         String porcentajeStr = etPorcentaje.getText().toString().trim();
+        String notaStr = etNota.getText().toString().trim(); // Leer nota
 
         if (nombre.isEmpty() || porcentajeStr.isEmpty()) {
             Toast.makeText(this, "Nombre y Porcentaje son obligatorios", Toast.LENGTH_SHORT).show();
@@ -85,31 +86,36 @@ public class AddEditActividadActivity extends AppCompatActivity {
 
         double porcentaje = Double.parseDouble(porcentajeStr);
 
-        // DEFINIR EL OBJETO A GUARDAR
+        // 4. Procesar la nota: Si está vacía, guardamos 0.0
+        double nota = 0.0;
+        if (!notaStr.isEmpty()) {
+            nota = Double.parseDouble(notaStr);
+        }
+
         Actividad actividadFinal;
 
         if (actividadEditar != null) {
-            // --- MODO EDICIÓN: Usamos el objeto existente y actualizamos sus campos ---
+            // EDITAR
             actividadEditar.nombre = nombre;
             actividadEditar.descripcion = descripcion;
             actividadEditar.fecha = fecha;
             actividadEditar.porcentaje = porcentaje;
+            actividadEditar.nota = nota; // Actualizar nota
 
-            // Mantenemos los IDs que ya tenía (id local y firestoreId)
             actividadFinal = actividadEditar;
         } else {
-            // --- MODO CREACIÓN: Creamos uno nuevo ---
+            // CREAR
             actividadFinal = new Actividad(nombre, descripcion, fecha, porcentaje, materiaId, materiaFirestoreId);
+            actividadFinal.nota = nota; // Asignar nota
         }
 
-        btnGuardar.setEnabled(false); // Bloquear botón
+        btnGuardar.setEnabled(false);
 
-        // 1. Guardar/Actualizar en Firebase
+        // Guardar en Firebase
         ActividadRepository.guardar(actividadFinal).addOnSuccessListener(unused -> {
 
-            // 2. Guardar/Actualizar en Local (Room)
+            // Guardar en Local
             Executors.newSingleThreadExecutor().execute(() -> {
-                // Room es inteligente: si el objeto tiene un ID que ya existe, @Insert(REPLACE) lo actualiza.
                 db.actividadDAO().insertar(actividadFinal);
 
                 runOnUiThread(() -> {
@@ -120,7 +126,7 @@ public class AddEditActividadActivity extends AppCompatActivity {
 
         }).addOnFailureListener(e -> {
             btnGuardar.setEnabled(true);
-            Toast.makeText(this, "Error al guardar en la nube: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error al guardar: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         });
     }
 }

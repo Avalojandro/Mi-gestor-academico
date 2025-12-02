@@ -99,46 +99,79 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
         int userRoomId = prefs.getInt(CLAVE_ROOM_ID, -1);
 
         if (userDocId == null || userRoomId == -1) {
-            Toast.makeText(this, "Error al identificar al usuario", Toast.LENGTH_SHORT).show();
             isLoading = false;
             return;
         }
 
-        // Fetch from Firestore
-        MateriaRepository.obtenerPorUsuario(userDocId).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                List<Materia> materiasDeFirestore = task.getResult().toObjects(Materia.class);
+        // 1. CARGA LOCAL (Rápida)
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Materia> materiasLocales = db.materiaDAO().obtenerPorUsuario(userRoomId);
 
-                for (int i = 0; i < task.getResult().getDocuments().size(); i++) {
-                    materiasDeFirestore.get(i).setFirestoreId(task.getResult().getDocuments().get(i).getId());
+            // Calculamos promedio local
+            calcularPromedios(materiasLocales);
+
+            runOnUiThread(() -> materiaAdapter.setMaterias(materiasLocales));
+
+            // 2. SINCRONIZACIÓN CON LA NUBE (Corrección)
+            MateriaRepository.obtenerPorUsuario(userDocId).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    List<Materia> materiasCloud = task.getResult().toObjects(Materia.class);
+
+                    Executors.newSingleThreadExecutor().execute(() -> {
+
+                        // RECORREMOS LO QUE VINO DE LA NUBE
+                        for (int i = 0; i < task.getResult().getDocuments().size(); i++) {
+                            Materia mCloud = materiasCloud.get(i);
+                            String fsId = task.getResult().getDocuments().get(i).getId();
+                            mCloud.setFirestoreId(fsId);
+
+                            // ¿Ya existe esta materia en mi celular?
+                            Materia mLocal = db.materiaDAO().obtenerPorFirestoreId(fsId);
+
+                            if (mLocal != null) {
+                                // SI EXISTE: Actualizamos solo los textos, PERO MANTENEMOS EL ID LOCAL
+                                // Esto evita que se borren las actividades
+                                mLocal.nombre = mCloud.nombre;
+                                mLocal.codigo = mCloud.codigo;
+                                mLocal.uv = mCloud.uv;
+                                db.materiaDAO().actualizar(mLocal);
+                            } else {
+                                // NO EXISTE: La creamos
+                                mCloud.setUserId(userRoomId);
+                                db.materiaDAO().insertar(mCloud);
+                            }
+                        }
+
+                        // Opcional: Aquí podrías borrar las materias locales que ya no están en la nube
+                        // pero por seguridad dejémoslo así por ahora.
+
+                        // 3. RECARGAR Y RECALCULAR FINALMENTE
+                        List<Materia> materiasFinales = db.materiaDAO().obtenerPorUsuario(userRoomId);
+                        calcularPromedios(materiasFinales);
+
+                        runOnUiThread(() -> {
+                            materiaAdapter.setMaterias(materiasFinales);
+                            isLoading = false;
+                        });
+                    });
+                } else {
+                    isLoading = false;
                 }
-
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    db.materiaDAO().eliminarPorUsuario(userRoomId);
-
-                    for (Materia m : materiasDeFirestore) {
-                        m.setUserId(userRoomId);
-                    }
-
-                    db.materiaDAO().crearTodas(materiasDeFirestore);
-
-                    List<Materia> materiasLocales = db.materiaDAO().obtenerPorUsuario(userRoomId);
-                    runOnUiThread(() -> {
-                        materiaAdapter.setMaterias(materiasLocales);
-                        isLoading = false;
-                    });
-                });
-            } else {
-                Log.e("MainActivity", "Error fetching materias from Firestore", task.getException());
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    List<Materia> materias = db.materiaDAO().obtenerPorUsuario(userRoomId);
-                    runOnUiThread(() -> {
-                        materiaAdapter.setMaterias(materias);
-                        isLoading = false;
-                    });
-                });
-            }
+            });
         });
+    }
+
+    // Método auxiliar para no repetir código del cálculo
+    private void calcularPromedios(List<Materia> materias) {
+        for (Materia m : materias) {
+            List<com.ues.dam.migestoracademico.entities.Actividad> acts = db.actividadDAO().obtenerPorMateria(m.id);
+            double suma = 0;
+            for (com.ues.dam.migestoracademico.entities.Actividad a : acts) {
+                // Cálculo: Nota * (Porcentaje / 100)
+                suma += (a.nota * (a.porcentaje / 100.0));
+            }
+            m.promedioCalculado = suma;
+        }
     }
 
     @Override

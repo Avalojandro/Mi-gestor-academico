@@ -1,5 +1,7 @@
 package com.ues.dam.migestoracademico.activities;
 
+import android.content.res.ColorStateList; // IMPORTANTE
+import android.graphics.Color;            // IMPORTANTE
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +20,10 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
     private List<Materia> materias = new ArrayList<>();
     private final OnMateriaListener listener;
 
-    // --- INTERFAZ ACTUALIZADA ---
     public interface OnMateriaListener {
-        void onDeleteClick(Materia materia, int position); // Click en borrar
-        void onEditClick(Materia materia);                 // Click en editar (lápiz)
-        void onMateriaClick(Materia materia);              // Click en la tarjeta (ver actividades)
+        void onDeleteClick(Materia materia, int position);
+        void onEditClick(Materia materia);
+        void onMateriaClick(Materia materia);
     }
 
     public MateriaAdapter(OnMateriaListener listener) {
@@ -42,9 +43,29 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
         Materia materia = materias.get(position);
         holder.tvNombre.setText(materia.nombre);
         holder.tvCodigo.setText(materia.codigo);
-        holder.tvUV.setText(String.format(Locale.getDefault(), "%d UV", materia.uv));
 
-        // El binding de los listeners se maneja en el ViewHolder
+        // 1. Obtener el promedio
+        double promedio = materia.promedioCalculado;
+
+        // 2. Formatear el texto (ej: "8.5")
+        holder.tvPromedio.setText(String.format(Locale.getDefault(), "%.1f", promedio));
+
+        // 3. Lógica de Colores (Semáforo)
+        int colorFondo;
+
+        if (promedio < 6.0) {
+            // ROJO (0 - 5.9)
+            colorFondo = Color.parseColor("#E53935");
+        } else if (promedio < 8.0) {
+            // NARANJA (6 - 7.9)
+            colorFondo = Color.parseColor("#FB8C00");
+        } else {
+            // VERDE (8 - 10)
+            colorFondo = Color.parseColor("#43A047");
+        }
+
+        // 4. Aplicar el color manteniendo la forma redondeada
+        holder.tvPromedio.setBackgroundTintList(ColorStateList.valueOf(colorFondo));
     }
 
     @Override
@@ -67,23 +88,23 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
         return materias.get(position);
     }
 
-    // --- VIEWHOLDER COMPLETO ---
+    // --- VIEWHOLDER ---
     class MateriaViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNombre, tvCodigo, tvUV;
+        TextView tvNombre, tvCodigo;
+        TextView tvPromedio;
+
         ImageButton btnDeleteMateria;
-        ImageButton btnEditMateria; // Referencia al nuevo botón
+        ImageButton btnEditMateria;
 
         public MateriaViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombre = itemView.findViewById(R.id.tvMateriaNombre);
             tvCodigo = itemView.findViewById(R.id.tvMateriaCodigo);
-            tvUV = itemView.findViewById(R.id.tvMateriaUV);
+            tvPromedio = itemView.findViewById(R.id.tvMateriaPromedio);
 
-            // Botones
             btnDeleteMateria = itemView.findViewById(R.id.btnDeleteMateria);
-            btnEditMateria = itemView.findViewById(R.id.btnEditMateria); // Asegúrate que este ID exista en tu XML
+            btnEditMateria = itemView.findViewById(R.id.btnEditMateria);
 
-            // 1. CLICK EN BORRAR (Basurero)
             btnDeleteMateria.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
@@ -91,7 +112,6 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
                 }
             });
 
-            // 2. CLICK EN EDITAR (Lápiz) -> Abre AddEditMateriaActivity
             btnEditMateria.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
@@ -99,7 +119,6 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
                 }
             });
 
-            // 3. CLICK EN LA TARJETA (Fondo) -> Abre ActividadesActivity
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
