@@ -24,23 +24,23 @@ public class Actividad implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int id; // ID Local (Room)
 
-    // Datos de la actividad
+
     public String nombre;
     public String descripcion;
-    public String fecha; // Guardaremos la fecha como texto por simplicidad (ej: "12/10/2023")
-    public double nota;  // Ejemplo: 8.5
-    public double porcentaje; // Ejemplo: 20%
+    public String fecha;
+    public double nota;
+    public double porcentaje;
 
-    // Relaciones
-    public int materiaId; // Relación Local (Foreign Key)
 
-    public String firestoreId; // ID del documento en Firebase
-    public String materiaFirestoreId; // ID de la materia en Firebase
+    public int materiaId;
 
-    // Constructor vacío requerido por Firebase
+    public String firestoreId;
+    public String materiaFirestoreId;
+
+
     public Actividad() {}
 
-    // Constructor para crear nuevas actividades fácilmente
+
     public Actividad(String nombre, String descripcion, String fecha, double porcentaje, int materiaId, String materiaFirestoreId) {
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -51,7 +51,7 @@ public class Actividad implements Serializable {
         this.nota = 0.0; // Nota inicial 0
     }
 
-    // Getters necesarios para Firebase (o usa public fields como arriba)
-    @Exclude // Excluimos el ID local de enviarse a Firebase
+
+    @Exclude
     public int getId() { return id; }
 }

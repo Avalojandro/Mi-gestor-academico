@@ -89,18 +89,17 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
         if (isLoading) return;
         isLoading = true;
 
-        // 1. CARGA LOCAL Y CÁLCULOS
+        // CARGA LOCAL Y CÁLCULOS
         Executors.newSingleThreadExecutor().execute(() -> {
-            // A. Obtener Info de la Materia (Para sacar las UV que no teníamos antes)
+
             Materia materiaObj = db.materiaDAO().obtenerPorId(materiaId);
 
-            // B. Obtener las Actividades
+            // Obtener las Actividades
             List<Actividad> lista = db.actividadDAO().obtenerPorMateria(materiaId);
 
-            // C. Calcular Promedio en tiempo real
+            // Calcular Promedio
             double sumaPromedio = 0;
             for (Actividad a : lista) {
-                // Cálculo: Nota * (Porcentaje / 100)
                 sumaPromedio += (a.nota * (a.porcentaje / 100.0));
             }
             final double promedioFinal = sumaPromedio;
@@ -115,12 +114,12 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
                     tvHeaderUV.setText(materiaObj.uv + " UV");
                 }
 
-                // Actualizar Badge de Promedio y su Color
+                // Actualizar Promedio y color
                 actualizarBadgePromedio(promedioFinal);
             });
         });
 
-        // 2. SINCRONIZACIÓN CON FIREBASE
+        // SINCRONIZACIÓN CON FIREBASE
         if (materiaFirestoreId != null) {
             ActividadRepository.obtenerPorMateria(materiaFirestoreId).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -164,7 +163,6 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
         }
     }
 
-    // Método auxiliar para pintar el badge de colores
     private void actualizarBadgePromedio(double promedio) {
         tvHeaderPromedio.setText(String.format(Locale.getDefault(), "%.1f", promedio));
 
@@ -179,7 +177,7 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
         tvHeaderPromedio.setBackgroundTintList(ColorStateList.valueOf(colorFondo));
     }
 
-    // --- MÉTODOS DE LA INTERFAZ ---
+
     @Override
     public void onEditClick(Actividad actividad) {
         Intent intent = new Intent(this, AddEditActividadActivity.class);
@@ -206,7 +204,6 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
                 ActividadRepository.eliminar(actividad.firestoreId);
             }
 
-            // Recargamos para actualizar el promedio del encabezado
             runOnUiThread(() -> {
                 adapter.removerActividad(position);
                 Toast.makeText(this, "Actividad eliminada", Toast.LENGTH_SHORT).show();

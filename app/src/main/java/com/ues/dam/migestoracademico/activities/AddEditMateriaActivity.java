@@ -25,7 +25,6 @@ public class AddEditMateriaActivity extends AppCompatActivity {
     private TextView tvTituloForm; // AÑADIR
     private AppDB db;
 
-    // ... (constantes de SharedPreferences) ...
     private static final String PREF_PERFIL = "perfil";
     private static final String CLAVE_DOC_ID = "docIdUsuario";
     private static final String CLAVE_ROOM_ID = "roomUsuarioId";
@@ -33,7 +32,6 @@ public class AddEditMateriaActivity extends AppCompatActivity {
     private String userDocId;
     private int userRoomId;
 
-    // --- AÑADIR ESTAS VARIABLES ---
     private boolean isEditMode = false;
     private Materia materiaActual;
     private int materiaId = -1;
@@ -45,35 +43,32 @@ public class AddEditMateriaActivity extends AppCompatActivity {
 
         db = AppDB.getInstance(this);
 
-        // --- Inicializar vistas ---
+
         tvTituloForm = findViewById(R.id.tvTituloForm);
         etMateriaNombre = findViewById(R.id.etMateriaNombre);
         etMateriaCodigo = findViewById(R.id.etMateriaCodigo);
         etMateriaUV = findViewById(R.id.etMateriaUV);
         btnGuardarMateria = findViewById(R.id.btnGuardarMateria);
 
-        // ... (Cargar IDs de usuario desde SharedPreferences) ...
         SharedPreferences prefs = getSharedPreferences(PREF_PERFIL, Context.MODE_PRIVATE);
         userDocId = prefs.getString(CLAVE_DOC_ID, null);
         userRoomId = prefs.getInt(CLAVE_ROOM_ID, -1);
 
-        // --- LOGICA DE EDICION ---
-        // Comprobar si recibimos un ID de materia
+
         materiaId = getIntent().getIntExtra("MATERIA_ID", -1);
 
         if (materiaId != -1) {
             isEditMode = true;
-            // Estamos en Modo Edicion
             tvTituloForm.setText("Editar Materia");
             btnGuardarMateria.setText("Actualizar Cambios");
             loadMateriaData(materiaId);
         } else {
-            // Estamos en Modo Creacion (como estaba antes)
+
             isEditMode = false;
             tvTituloForm.setText("Nueva Materia");
             btnGuardarMateria.setText("Guardar Materia");
         }
-        // --- FIN LGICA DE EDICIoN ---
+
 
         btnGuardarMateria.setOnClickListener(v -> guardarMateria());
     }
@@ -113,19 +108,18 @@ public class AddEditMateriaActivity extends AppCompatActivity {
             return;
         }
 
-        // --- LGICA DE GUARDADO/ACTUALIZACIoN ---
+
         if (isEditMode) {
-            // --- MODO EDICION: ACTUALIZAR ---
-            // 1. Actualizar el objeto 'materiaActual'
+
             materiaActual.nombre = nombre;
             materiaActual.codigo = codigo;
             materiaActual.uv = uv;
 
             Executors.newSingleThreadExecutor().execute(() -> {
-                // 2. Actualizar en Room
+
                 db.materiaDAO().actualizar(materiaActual);
 
-                // 3. Actualizar en Firestore
+
                 if (materiaActual.firestoreId != null) {
                     MateriaRepository.actualizar(materiaActual.firestoreId, materiaActual)
                             .addOnFailureListener(
@@ -136,7 +130,7 @@ public class AddEditMateriaActivity extends AppCompatActivity {
                                                     .show()));
                 }
 
-                // 4. Finalizar
+
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Materia actualizada", Toast.LENGTH_SHORT).show();
                     finish();
@@ -144,16 +138,16 @@ public class AddEditMateriaActivity extends AppCompatActivity {
             });
 
         } else {
-            // --- MODO CREACION: (Tu logica anterior) ---
+
             if (userDocId == null || userRoomId == -1) {
                 Toast.makeText(this, "Error de sesión de usuario", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // objeto Materia
+
             Materia nuevaMateria = new Materia(nombre, codigo, uv, null, userDocId, userRoomId);
 
-            // gardar en Firestore primer\o
+
             MateriaRepository.crear(nuevaMateria)
                     .addOnSuccessListener(documentReference -> {
                         String firestoreId = documentReference.getId();

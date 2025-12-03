@@ -17,7 +17,6 @@ import java.util.concurrent.Executors;
 
 public class AddEditActividadActivity extends AppCompatActivity {
 
-    // 1. Agregamos etNota
     private EditText etNombre, etDescripcion, etFecha, etPorcentaje, etNota;
     private Button btnGuardar;
     private TextView tvTitulo;
@@ -40,7 +39,6 @@ public class AddEditActividadActivity extends AppCompatActivity {
         etDescripcion = findViewById(R.id.etDescripcionActividad);
         etFecha = findViewById(R.id.etFechaActividad);
         etPorcentaje = findViewById(R.id.etPorcentajeActividad);
-        // 2. Vincular vista nueva
         etNota = findViewById(R.id.etNotaActividad);
 
         btnGuardar = findViewById(R.id.btnGuardarActividad);
@@ -50,7 +48,7 @@ public class AddEditActividadActivity extends AppCompatActivity {
             materiaFirestoreId = getIntent().getStringExtra("MATERIA_FS_ID");
         }
 
-        // MODO EDICIÓN
+        // EDICIÓN
         if (getIntent().hasExtra("ACTIVIDAD_OBJ")) {
             actividadEditar = (Actividad) getIntent().getSerializableExtra("ACTIVIDAD_OBJ");
 
@@ -62,7 +60,6 @@ public class AddEditActividadActivity extends AppCompatActivity {
                 etFecha.setText(actividadEditar.fecha);
                 etPorcentaje.setText(String.valueOf(actividadEditar.porcentaje));
 
-                // 3. Llenar la nota (Solo si es mayor a 0 para no mostrar 0.0 siempre)
                 etNota.setText(String.valueOf(actividadEditar.nota));
 
                 btnGuardar.setText("Actualizar Actividad");
@@ -86,7 +83,6 @@ public class AddEditActividadActivity extends AppCompatActivity {
 
         double porcentaje = Double.parseDouble(porcentajeStr);
 
-        // 4. Procesar la nota: Si está vacía, guardamos 0.0
         double nota = 0.0;
         if (!notaStr.isEmpty()) {
             nota = Double.parseDouble(notaStr);
@@ -100,21 +96,21 @@ public class AddEditActividadActivity extends AppCompatActivity {
             actividadEditar.descripcion = descripcion;
             actividadEditar.fecha = fecha;
             actividadEditar.porcentaje = porcentaje;
-            actividadEditar.nota = nota; // Actualizar nota
+            actividadEditar.nota = nota;
 
             actividadFinal = actividadEditar;
         } else {
             // CREAR
             actividadFinal = new Actividad(nombre, descripcion, fecha, porcentaje, materiaId, materiaFirestoreId);
-            actividadFinal.nota = nota; // Asignar nota
+            actividadFinal.nota = nota;
         }
 
         btnGuardar.setEnabled(false);
 
-        // Guardar en Firebase
+        // Firebase
         ActividadRepository.guardar(actividadFinal).addOnSuccessListener(unused -> {
 
-            // Guardar en Local
+            // Local
             Executors.newSingleThreadExecutor().execute(() -> {
                 db.actividadDAO().insertar(actividadFinal);
 

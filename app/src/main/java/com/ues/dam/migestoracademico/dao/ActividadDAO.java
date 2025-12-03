@@ -14,7 +14,7 @@ import java.util.List;
 @Dao
 public interface ActividadDAO {
 
-    // Obtener actividades de una materia específica
+
     @Query("SELECT * FROM actividades WHERE materiaId = :materiaId")
     List<Actividad> obtenerPorMateria(int materiaId);
 
@@ -30,7 +30,6 @@ public interface ActividadDAO {
     @Delete
     void eliminar(Actividad actividad);
 
-    // Para limpiar datos al sincronizar
     @Query("DELETE FROM actividades WHERE materiaId = :materiaId")
     void eliminarTodasDeMateria(int materiaId);
 }

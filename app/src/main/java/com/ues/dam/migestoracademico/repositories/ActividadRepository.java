@@ -11,7 +11,7 @@ public class ActividadRepository {
 
     private static final String COLLECTION_NAME = "actividades";
 
-    // Obtener actividades filtrando por el ID DE FIREBASE de la materia
+
     public static Task<QuerySnapshot> obtenerPorMateria(String materiaFirestoreId) {
         return FirebaseFirestore.getInstance()
                 .collection(COLLECTION_NAME)
@@ -19,23 +19,23 @@ public class ActividadRepository {
                 .get();
     }
 
-    // Guardar o Actualizar una actividad
+
     public static Task<Void> guardar(Actividad actividad) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference collection = db.collection(COLLECTION_NAME);
 
         if (actividad.firestoreId == null || actividad.firestoreId.isEmpty()) {
-            // Es nueva, generamos ID
+
             DocumentReference newDoc = collection.document();
             actividad.firestoreId = newDoc.getId();
             return newDoc.set(actividad);
         } else {
-            // Ya existe, actualizamos
+
             return collection.document(actividad.firestoreId).set(actividad);
         }
     }
 
-    // Eliminar actividad
+
     public static Task<Void> eliminar(String actividadFirestoreId) {
         return FirebaseFirestore.getInstance()
                 .collection(COLLECTION_NAME)
