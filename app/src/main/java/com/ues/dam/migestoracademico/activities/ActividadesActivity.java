@@ -25,7 +25,6 @@ import java.util.concurrent.Executors;
 
 public class ActividadesActivity extends AppCompatActivity implements ActividadAdapter.OnActividadListener {
 
-    // --- NUEVAS VARIABLES DEL HEADER ---
     private TextView tvHeaderNombre, tvHeaderUV, tvHeaderPromedio;
 
     private RecyclerView rvActividades;
@@ -46,7 +45,6 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
 
         db = AppDB.getInstance(this);
 
-        // 1. Vincular vistas (Incluyendo el nuevo Header)
         tvHeaderNombre = findViewById(R.id.tvHeaderNombreMateria);
         tvHeaderUV = findViewById(R.id.tvHeaderUV);
         tvHeaderPromedio = findViewById(R.id.tvHeaderPromedio);
@@ -62,7 +60,6 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
             materiaId = getIntent().getIntExtra("MATERIA_ID", -1);
             materiaFirestoreId = getIntent().getStringExtra("MATERIA_FS_ID");
 
-            // Ponemos el nombre temporalmente mientras carga la BD
             String nombreTemp = getIntent().getStringExtra("MATERIA_NOMBRE");
             if(nombreTemp != null) tvHeaderNombre.setText(nombreTemp);
 
@@ -89,15 +86,12 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
         if (isLoading) return;
         isLoading = true;
 
-        // CARGA LOCAL Y CÁLCULOS
         Executors.newSingleThreadExecutor().execute(() -> {
 
             Materia materiaObj = db.materiaDAO().obtenerPorId(materiaId);
 
-            // Obtener las Actividades
             List<Actividad> lista = db.actividadDAO().obtenerPorMateria(materiaId);
 
-            // Calcular Promedio
             double sumaPromedio = 0;
             for (Actividad a : lista) {
                 sumaPromedio += (a.nota * (a.porcentaje / 100.0));
@@ -105,21 +99,17 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
             final double promedioFinal = sumaPromedio;
 
             runOnUiThread(() -> {
-                // Actualizar lista
                 if (!lista.isEmpty()) adapter.setActividades(lista);
 
-                // Actualizar Header (Nombre y UV)
                 if (materiaObj != null) {
                     tvHeaderNombre.setText(materiaObj.nombre);
                     tvHeaderUV.setText(materiaObj.uv + " UV");
                 }
 
-                // Actualizar Promedio y color
                 actualizarBadgePromedio(promedioFinal);
             });
         });
 
-        // SINCRONIZACIÓN CON FIREBASE
         if (materiaFirestoreId != null) {
             ActividadRepository.obtenerPorMateria(materiaFirestoreId).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -133,11 +123,9 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
                         db.actividadDAO().eliminarTodasDeMateria(materiaId);
                         db.actividadDAO().insertarTodas(listaNube);
 
-                        // Recargar datos actualizados
                         List<Actividad> actualizada = db.actividadDAO().obtenerPorMateria(materiaId);
                         Materia matObj = db.materiaDAO().obtenerPorId(materiaId);
 
-                        // Recalcular con datos nuevos
                         double suma = 0;
                         for (Actividad a : actualizada) {
                             suma += (a.nota * (a.porcentaje / 100.0));

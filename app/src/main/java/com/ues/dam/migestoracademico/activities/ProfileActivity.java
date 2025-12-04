@@ -57,7 +57,6 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Reload user profile in case it was edited
         loadUserProfile();
     }
 
@@ -68,7 +67,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (email != null) {
             Executors.newSingleThreadExecutor().execute(() -> {
-                // We read from the local Room DB (our 'cache')
                 currentUser = db.usuarioDAO().buscarPorEmail(email);
 
                 runOnUiThread(() -> {

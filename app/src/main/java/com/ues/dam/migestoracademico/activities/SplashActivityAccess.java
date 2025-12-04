@@ -20,7 +20,6 @@ public class SplashActivityAccess extends AppCompatActivity {
         setContentView(R.layout.activity_splash_access);
 
         new Handler().postDelayed(() -> {
-            // Ir al dashboard principal
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }, ACCESS_DELAY);

@@ -93,19 +93,16 @@ public class LoginActivity extends AppCompatActivity {
         firebaseAuth.signInWithEmailAndPassword(email, contrasena)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // inicio de sesion exitoso en Firebase
                         String docId = firebaseAuth.getCurrentUser().getUid();
                         Executors.newSingleThreadExecutor().execute(() -> {
                             Usuario usuarioEncontrado = db.usuarioDAO().buscarPorEmail(email);
 
                             if (usuarioEncontrado != null) {
-                                // usuario encontrado en la base de datos local
                                 Usuario finalUsuarioEncontrado = usuarioEncontrado;
                                 runOnUiThread(() -> {
                                     procederConInicioSesion(email, docId, finalUsuarioEncontrado.id);
                                 });
                             } else {
-                                // usuario no encontrado en la base de datos local, buscar en Firestore
                                 UsuarioRepository.getUser(docId).addOnCompleteListener(taskFirestore -> {
                                     if (taskFirestore.isSuccessful() && taskFirestore.getResult().exists()) {
                                         Usuario usuarioDeFirestore = taskFirestore.getResult().toObject(Usuario.class);
@@ -117,7 +114,6 @@ public class LoginActivity extends AppCompatActivity {
                                             });
                                         });
                                     } else {
-                                        // Usuario no encontrado en Firestore, esto es un estado inconsistente
                                         runOnUiThread(() -> {
                                             Toast.makeText(LoginActivity.this, "No se encontraron datos del usuario.",
                                                     Toast.LENGTH_SHORT).show();
@@ -128,7 +124,6 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         });
                     } else {
-                        // Si el inicio de sesion falla
                         Toast.makeText(LoginActivity.this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT)
                                 .show();
                     }

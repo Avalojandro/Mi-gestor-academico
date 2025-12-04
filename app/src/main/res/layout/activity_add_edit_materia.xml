@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -37,25 +38,27 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:hint="Código (ej: PDM115)"
+        android:inputType="textCapCharacters"
         android:textColor="@color/white"
-        android:textColorHint="@color/light_gray"
-        android:inputType="textCapCharacters" />
+        android:textColorHint="@color/light_gray" />
 
     <EditText
         android:id="@+id/etMateriaUV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:textColor="@color/white"
-        android:textColorHint="@color/light_gray"
         android:hint="Unidades Valorativas (ej: 4)"
-        android:inputType="number" />
+        android:inputType="number"
+        android:textColor="@color/white"
+        android:textColorHint="@color/light_gray" />
 
     <Button
         android:id="@+id/btnGuardarMateria"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         android:backgroundTint="@color/navy_blue"
         android:text="Guardar Materia"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:cornerRadius="10dp" />
 </LinearLayout>

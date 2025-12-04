@@ -26,8 +26,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nombre:"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textColor="@color/dark_gray"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/etEditName"
@@ -36,6 +37,7 @@
         android:layout_marginBottom="16dp"
         android:hint="Ingresa tu nombre"
         android:inputType="textPersonName"
+        android:paddingTop="10dp"
         android:textColor="@color/white"
         android:textColorHint="@color/light_gray"
         android:textSize="20sp" />
@@ -44,24 +46,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Email (no se puede cambiar):"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textColor="@color/dark_gray"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvEditEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:textColor="@android:color/darker_gray"
+        android:paddingTop="10dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/light_gray"
         android:textSize="20sp"
         tools:text="usuario@email.com" />
 
     <Button
         android:id="@+id/btnSaveProfile"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         android:backgroundTint="@color/navy_blue"
         android:text="Guardar Cambios"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:cornerRadius="10dp" />
 
 </LinearLayout>

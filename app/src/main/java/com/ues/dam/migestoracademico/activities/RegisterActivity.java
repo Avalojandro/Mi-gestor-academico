@@ -76,7 +76,6 @@ public class RegisterActivity extends AppCompatActivity {
         String contrasena = etContrasena.getText().toString().trim();
         String name = etNombre.getText().toString().trim();
 
-        // Validaciones
         if (name.isEmpty()) {
             etNombre.setError("El nombre es obligatorio");
             etNombre.requestFocus();
@@ -110,11 +109,9 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // Formatos validos, siguiente paso
         firebaseAuth.createUserWithEmailAndPassword(email, contrasena)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Registro exitoso en Firebase, ahora guarda en Room
                         String uid = firebaseAuth.getCurrentUser().getUid();
                         Executors.newSingleThreadExecutor().execute(() -> {
                             try {
@@ -140,7 +137,6 @@ public class RegisterActivity extends AppCompatActivity {
                             }
                         });
                     } else {
-                        // Si el registro falla, muestra un mensaje al usuario.
                         Toast.makeText(RegisterActivity.this, "Error al registrar: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });

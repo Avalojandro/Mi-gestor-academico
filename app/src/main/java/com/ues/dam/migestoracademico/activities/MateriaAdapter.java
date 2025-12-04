@@ -1,7 +1,7 @@
 package com.ues.dam.migestoracademico.activities;
 
-import android.content.res.ColorStateList; // IMPORTANTE
-import android.graphics.Color;            // IMPORTANTE
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,13 +44,13 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
         holder.tvNombre.setText(materia.nombre);
         holder.tvCodigo.setText(materia.codigo);
 
-        // 1. Obtener el promedio
+        // Obtener el promedio
         double promedio = materia.promedioCalculado;
 
-        // 2. Formatear el texto (ej: "8.5")
+        // Formatear el texto
         holder.tvPromedio.setText(String.format(Locale.getDefault(), "%.1f", promedio));
 
-        // 3. Lógica de Colores (Semáforo)
+        // Lógica de Colores
         int colorFondo;
 
         if (promedio < 6.0) {
@@ -64,7 +64,7 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
             colorFondo = Color.parseColor("#43A047");
         }
 
-        // 4. Aplicar el color manteniendo la forma redondeada
+        // Aplicar el color
         holder.tvPromedio.setBackgroundTintList(ColorStateList.valueOf(colorFondo));
     }
 
@@ -88,7 +88,6 @@ public class MateriaAdapter extends RecyclerView.Adapter<MateriaAdapter.MateriaV
         return materias.get(position);
     }
 
-    // --- VIEWHOLDER ---
     class MateriaViewHolder extends RecyclerView.ViewHolder {
         TextView tvNombre, tvCodigo;
         TextView tvPromedio;

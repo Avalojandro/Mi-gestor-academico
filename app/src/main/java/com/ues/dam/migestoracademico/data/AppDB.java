@@ -5,16 +5,11 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import android.content.Context;
 
-// Importar los DAOs existentes
 import com.ues.dam.migestoracademico.dao.MateriaDAO;
 import com.ues.dam.migestoracademico.dao.UsuarioDAO;
 
-// --- CORRECCIÓN AQUÍ ---
-// Antes tenías: .data.ActividadDAO
-// Debe ser:     .dao.ActividadDAO
 import com.ues.dam.migestoracademico.dao.ActividadDAO;
 
-// Importar las entidades
 import com.ues.dam.migestoracademico.entities.Materia;
 import com.ues.dam.migestoracademico.entities.Usuario;
 import com.ues.dam.migestoracademico.entities.Actividad;

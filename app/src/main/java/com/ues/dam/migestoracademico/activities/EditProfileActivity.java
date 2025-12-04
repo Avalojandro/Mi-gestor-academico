@@ -36,13 +36,11 @@ public class EditProfileActivity extends AppCompatActivity {
 
         db = AppDB.getInstance(this);
 
-        // Get data from ProfileActivity
         Intent intent = getIntent();
         String currentName = intent.getStringExtra("CURRENT_NAME");
         currentEmail = intent.getStringExtra("CURRENT_EMAIL");
         docId = intent.getStringExtra("DOC_ID");
 
-        // Populate fields
         etEditName.setText(currentName);
         tvEditEmail.setText(currentEmail);
 
@@ -58,24 +56,20 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            // 1. Get the full user object from Room
             Usuario usuario = db.usuarioDAO().buscarPorEmail(currentEmail);
             if (usuario == null) {
                 runOnUiThread(() -> Toast.makeText(this, "Error: No se encontró el usuario local", Toast.LENGTH_SHORT).show());
                 return;
             }
 
-            // 2. Update the name
             usuario.name = newName;
 
-            // 3. Save to local Room DB
             db.usuarioDAO().actualizar(usuario);
 
-            // 4. Save to remote Firestore DB
             UsuarioRepository.updateUser(docId, usuario)
                     .addOnSuccessListener(aVoid -> runOnUiThread(() -> {
                         Toast.makeText(this, "Perfil actualizado", Toast.LENGTH_SHORT).show();
-                        finish(); // Go back to ProfileActivity
+                        finish();
                     }))
                     .addOnFailureListener(e -> runOnUiThread(() -> {
                         Toast.makeText(this, "Error al actualizar en Firestore", Toast.LENGTH_SHORT).show();

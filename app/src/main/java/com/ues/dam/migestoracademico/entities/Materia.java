@@ -2,13 +2,13 @@ package com.ues.dam.migestoracademico.entities;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.Ignore; // IMPORTANTE: Agregar este import
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.google.firebase.firestore.Exclude;
 
-import java.io.Serializable; // Recomendado implementar Serializable para pasar objetos entre activities
+import java.io.Serializable;
 
 @Entity(tableName = "materias", indices = { @Index(value = "user_id") })
 public class Materia implements Serializable {
@@ -27,13 +27,11 @@ public class Materia implements Serializable {
     @Exclude
     public int userId;
 
-    // --- CAMPO NUEVO PARA EL CÁLCULO ---
     // @Ignore: Room no lo guarda en la base de datos local
     // @Exclude: Firestore no lo sube a la nube
     @Ignore
     @Exclude
     public double promedioCalculado = 0.0;
-    // -----------------------------------
 
     public Materia() {
     }
@@ -47,7 +45,6 @@ public class Materia implements Serializable {
         this.userId = userId;
     }
 
-    // Getters y Setters...
     @Exclude
     public int getUserId() { return userId; }
     @Exclude

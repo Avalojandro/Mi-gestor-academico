@@ -52,7 +52,7 @@
             android:exported="false" />
 
 
-        <!-- Perfil y edit perfil -->
+        <!-- PERFIL Y EDIT PERFIL -->
 
         <activity
             android:name=".activities.ProfileActivity"
@@ -71,13 +71,6 @@
             android:name=".activities.AddEditActividadActivity"
             android:exported="false"
             android:parentActivityName=".activities.ActividadesActivity" />
-
-        <!-- Mapa -->
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAvP4EX4aRuNEFW9Jn7L5DtA1dhQV3jWDo"/>
-        <activity android:name=".activities.MapActivity" />
 
     </application>
 

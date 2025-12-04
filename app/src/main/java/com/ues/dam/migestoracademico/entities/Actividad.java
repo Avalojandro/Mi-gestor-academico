@@ -9,7 +9,6 @@ import com.google.firebase.firestore.Exclude;
 
 import java.io.Serializable;
 
-// Definimos la clave foránea: Si borras una Materia, se borran sus Actividades (CASCADE)
 @Entity(tableName = "actividades",
         foreignKeys = @ForeignKey(
                 entity = Materia.class,
@@ -17,12 +16,12 @@ import java.io.Serializable;
                 childColumns = "materiaId",
                 onDelete = ForeignKey.CASCADE
         ),
-        indices = {@Index("materiaId")} // Índice para hacer las consultas rápidas
+        indices = {@Index("materiaId")}
 )
 public class Actividad implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
-    public int id; // ID Local (Room)
+    public int id;
 
 
     public String nombre;
@@ -48,7 +47,7 @@ public class Actividad implements Serializable {
         this.porcentaje = porcentaje;
         this.materiaId = materiaId;
         this.materiaFirestoreId = materiaFirestoreId;
-        this.nota = 0.0; // Nota inicial 0
+        this.nota = 0.0;
     }
 
 

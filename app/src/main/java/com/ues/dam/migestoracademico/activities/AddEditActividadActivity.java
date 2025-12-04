@@ -48,7 +48,6 @@ public class AddEditActividadActivity extends AppCompatActivity {
             materiaFirestoreId = getIntent().getStringExtra("MATERIA_FS_ID");
         }
 
-        // EDICIÓN
         if (getIntent().hasExtra("ACTIVIDAD_OBJ")) {
             actividadEditar = (Actividad) getIntent().getSerializableExtra("ACTIVIDAD_OBJ");
 
@@ -74,7 +73,7 @@ public class AddEditActividadActivity extends AppCompatActivity {
         String descripcion = etDescripcion.getText().toString().trim();
         String fecha = etFecha.getText().toString().trim();
         String porcentajeStr = etPorcentaje.getText().toString().trim();
-        String notaStr = etNota.getText().toString().trim(); // Leer nota
+        String notaStr = etNota.getText().toString().trim();
 
         if (nombre.isEmpty() || porcentajeStr.isEmpty()) {
             Toast.makeText(this, "Nombre y Porcentaje son obligatorios", Toast.LENGTH_SHORT).show();
@@ -91,7 +90,6 @@ public class AddEditActividadActivity extends AppCompatActivity {
         Actividad actividadFinal;
 
         if (actividadEditar != null) {
-            // EDITAR
             actividadEditar.nombre = nombre;
             actividadEditar.descripcion = descripcion;
             actividadEditar.fecha = fecha;
@@ -100,17 +98,14 @@ public class AddEditActividadActivity extends AppCompatActivity {
 
             actividadFinal = actividadEditar;
         } else {
-            // CREAR
             actividadFinal = new Actividad(nombre, descripcion, fecha, porcentaje, materiaId, materiaFirestoreId);
             actividadFinal.nota = nota;
         }
 
         btnGuardar.setEnabled(false);
 
-        // Firebase
         ActividadRepository.guardar(actividadFinal).addOnSuccessListener(unused -> {
 
-            // Local
             Executors.newSingleThreadExecutor().execute(() -> {
                 db.actividadDAO().insertar(actividadFinal);
 

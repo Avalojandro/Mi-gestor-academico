@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView; //
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,14 +15,14 @@ import com.ues.dam.migestoracademico.data.AppDB;
 import com.ues.dam.migestoracademico.entities.Materia;
 import com.ues.dam.migestoracademico.repositories.MateriaRepository;
 
-import java.util.Locale; //
+import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class AddEditMateriaActivity extends AppCompatActivity {
 
     private EditText etMateriaNombre, etMateriaCodigo, etMateriaUV;
     private Button btnGuardarMateria;
-    private TextView tvTituloForm; // AÑADIR
+    private TextView tvTituloForm;
     private AppDB db;
 
     private static final String PREF_PERFIL = "perfil";
@@ -153,11 +153,9 @@ public class AddEditMateriaActivity extends AppCompatActivity {
                         String firestoreId = documentReference.getId();
                         nuevaMateria.firestoreId = firestoreId;
 
-                        // guardar en Room
                         Executors.newSingleThreadExecutor().execute(() -> {
                             db.materiaDAO().crear(nuevaMateria);
 
-                            // volver
                             runOnUiThread(() -> {
                                 Toast.makeText(AddEditMateriaActivity.this, "Materia guardada", Toast.LENGTH_SHORT)
                                         .show();
