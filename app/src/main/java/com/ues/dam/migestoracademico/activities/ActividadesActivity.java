@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 public class ActividadesActivity extends AppCompatActivity implements ActividadAdapter.OnActividadListener {
 
     private TextView tvHeaderNombre, tvHeaderUV, tvHeaderPromedio;
+    private TextView tvEmptyState;
 
     private RecyclerView rvActividades;
     private FloatingActionButton fabAddActividad;
@@ -48,6 +49,7 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
         tvHeaderNombre = findViewById(R.id.tvHeaderNombreMateria);
         tvHeaderUV = findViewById(R.id.tvHeaderUV);
         tvHeaderPromedio = findViewById(R.id.tvHeaderPromedio);
+        tvEmptyState = findViewById(R.id.tvEmptyState);
 
         rvActividades = findViewById(R.id.rvActividades);
         fabAddActividad = findViewById(R.id.fabAddActividad);
@@ -99,7 +101,8 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
             final double promedioFinal = sumaPromedio;
 
             runOnUiThread(() -> {
-                if (!lista.isEmpty()) adapter.setActividades(lista);
+                adapter.setActividades(lista);
+                checkEmptyState();
 
                 if (materiaObj != null) {
                     tvHeaderNombre.setText(materiaObj.nombre);
@@ -134,6 +137,7 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
 
                         runOnUiThread(() -> {
                             adapter.setActividades(actualizada);
+                            checkEmptyState();
                             if (matObj != null) {
                                 tvHeaderNombre.setText(matObj.nombre);
                                 tvHeaderUV.setText(matObj.uv + " UV");
@@ -151,20 +155,27 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
         }
     }
 
+    private void checkEmptyState() {
+        if (adapter.getItemCount() == 0) {
+            tvEmptyState.setVisibility(android.view.View.VISIBLE);
+        } else {
+            tvEmptyState.setVisibility(android.view.View.GONE);
+        }
+    }
+
     private void actualizarBadgePromedio(double promedio) {
         tvHeaderPromedio.setText(String.format(Locale.getDefault(), "%.1f", promedio));
 
         int colorFondo;
         if (promedio < 6.0) {
-            colorFondo = Color.parseColor("#E53935"); // Rojo
+            colorFondo = Color.parseColor("#E53935");
         } else if (promedio < 8.0) {
-            colorFondo = Color.parseColor("#FB8C00"); // Naranja
+            colorFondo = Color.parseColor("#FB8C00");
         } else {
-            colorFondo = Color.parseColor("#43A047"); // Verde
+            colorFondo = Color.parseColor("#43A047");
         }
         tvHeaderPromedio.setBackgroundTintList(ColorStateList.valueOf(colorFondo));
     }
-
 
     @Override
     public void onEditClick(Actividad actividad) {
@@ -194,6 +205,7 @@ public class ActividadesActivity extends AppCompatActivity implements ActividadA
 
             runOnUiThread(() -> {
                 adapter.removerActividad(position);
+                checkEmptyState();
                 Toast.makeText(this, "Actividad eliminada", Toast.LENGTH_SHORT).show();
                 isLoading = false;
                 loadActividades();

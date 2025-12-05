@@ -26,9 +26,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nombre:"
-        android:textColor="@color/dark_gray"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/etEditName"
@@ -38,17 +38,18 @@
         android:hint="Ingresa tu nombre"
         android:inputType="textPersonName"
         android:paddingTop="10dp"
-        android:textColor="@color/white"
-        android:textColorHint="@color/light_gray"
-        android:textSize="20sp" />
+        android:textColor="@color/midnight_blue"
+        android:textColorHint="@color/midnight_blue"
+        android:textSize="20sp"
+        android:textStyle="normal" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Email (no se puede cambiar):"
-        android:textColor="@color/dark_gray"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/tvEditEmail"
@@ -56,16 +57,17 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:paddingTop="10dp"
-        android:textColor="@color/white"
-        android:textColorHint="@color/light_gray"
+        android:textColor="@color/midnight_blue"
+        android:textColorHint="@color/midnight_blue"
         android:textSize="20sp"
+        android:textStyle="normal"
         tools:text="usuario@email.com" />
 
     <Button
         android:id="@+id/btnSaveProfile"
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:backgroundTint="@color/navy_blue"
+        android:backgroundTint="@color/midnight_blue"
         android:text="Guardar Cambios"
         android:textColor="@color/white"
         android:textSize="18sp"
