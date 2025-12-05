@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -36,10 +37,12 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
     private MateriaAdapter materiaAdapter;
     private FloatingActionButton fabAddMateria;
     private boolean isLoading = false;
+    private TextView tvNombreUsuario;
 
     private static final String PREF_PERFIL = "perfil";
     private static final String CLAVE_ROOM_ID = "roomUsuarioId";
     private static final String CLAVE_DOC_ID = "docIdUsuario";
+    private static final String CLAVE_EMAIL = "emailUsuario";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
         rvMaterias = findViewById(R.id.rvMaterias);
         fabAddMateria = findViewById(R.id.fabAddMateria);
 
+        tvNombreUsuario = findViewById(R.id.tvNombreUsuario);
+
         rvMaterias.setLayoutManager(new LinearLayoutManager(this));
         materiaAdapter = new MateriaAdapter(this);
         rvMaterias.setAdapter(materiaAdapter);
@@ -67,12 +72,32 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
         fabAddMateria.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, AddEditMateriaActivity.class)));
 
         loadMaterias();
+        mostrarNombreUsuario();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         loadMaterias();
+        mostrarNombreUsuario();
+    }
+
+    private void mostrarNombreUsuario() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            SharedPreferences prefs = getSharedPreferences(PREF_PERFIL, Context.MODE_PRIVATE);
+            String email = prefs.getString(CLAVE_EMAIL, null);
+
+            if (email != null) {
+                com.ues.dam.migestoracademico.entities.Usuario usuario = db.usuarioDAO().buscarPorEmail(email);
+                runOnUiThread(() -> {
+                    if (usuario != null && usuario.name != null) {
+                        tvNombreUsuario.setText(usuario.name);
+                    } else {
+                        tvNombreUsuario.setText("Usuario");
+                    }
+                });
+            }
+        });
     }
 
     private void loadMaterias() {
@@ -139,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
             List<com.ues.dam.migestoracademico.entities.Actividad> acts = db.actividadDAO().obtenerPorMateria(m.id);
             double suma = 0;
             for (com.ues.dam.migestoracademico.entities.Actividad a : acts) {
-                // Cálculo: Nota * (Porcentaje / 100)
                 suma += (a.nota * (a.porcentaje / 100.0));
             }
             m.promedioCalculado = suma;
@@ -165,7 +189,6 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public void onEditClick(Materia materia) {
@@ -193,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements MateriaAdapter.On
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
     }
-
 
     private void cerrarSesion() {
         new AlertDialog.Builder(this)
